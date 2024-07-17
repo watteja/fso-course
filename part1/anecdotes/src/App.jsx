@@ -27,7 +27,13 @@ const App = () => {
   const [votes, setVotes] = useState(new Uint8Array(anecdotes.length));
 
   const getRandomAnecdote = () => {
-    const randomIndex = Math.floor(Math.random() * anecdotes.length);
+    // ensure randomly selected anecdote is different from the currently displayed one
+    let randomIndex = selected;
+    let different = false;
+    while (!different) {
+      randomIndex = Math.floor(Math.random() * anecdotes.length);
+      different = randomIndex !== selected;
+    }
     setSelected(randomIndex);
   };
 
