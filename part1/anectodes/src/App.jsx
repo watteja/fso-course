@@ -1,5 +1,15 @@
 import { useState } from "react";
 
+const Anecdote = ({ title, text, votes }) => {
+  return (
+    <div>
+      <h1>{title}</h1>
+      <div>{text}</div>
+      <div>has {votes} votes</div>
+    </div>
+  );
+};
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -22,19 +32,45 @@ const App = () => {
   };
 
   const vote = (voteIndex) => {
-    console.log(votes);
     const votesCopy = [...votes];
     votesCopy[voteIndex] += 1;
-    console.log(votesCopy);
     setVotes(votesCopy);
   };
 
+  /**
+   * Get top voted anecdote index and vote count.
+   * In case of ties, the lower array index will be chosen.
+   */
+  const getTopVotedInfo = () => {
+    let max = votes[0];
+    let maxIndex = 0;
+
+    for (let i = 1; i < votes.length; i++) {
+      if (votes[i] > max) {
+        maxIndex = i;
+        max = votes[i];
+      }
+    }
+
+    return [maxIndex, max];
+  };
+  const [topVotedIndex, topVotes] = getTopVotedInfo();
+
   return (
     <div>
-      <div>{anecdotes[selected]}</div>
-      <div>has {votes[selected]} votes</div>
+      <Anecdote
+        title="Anecdote of the day"
+        text={anecdotes[selected]}
+        votes={votes[selected]}
+      />
       <button onClick={() => vote(selected)}>vote</button>
       <button onClick={() => getRandomAnecdote()}>next anecdote</button>
+
+      <Anecdote
+        title="Anecdote with most votes"
+        text={anecdotes[topVotedIndex]}
+        votes={topVotes}
+      />
     </div>
   );
 };
