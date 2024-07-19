@@ -1,6 +1,5 @@
-const Total = ({ exercisesPerPart }) => {
-  const total = exercisesPerPart.reduce((acc, curr) => acc + curr, 0);
-  return <b>total of {total} exercises</b>;
+const Total = ({ sum }) => {
+  return <b>total of {sum} exercises</b>;
 };
 
 export default Total;
