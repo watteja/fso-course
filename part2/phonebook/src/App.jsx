@@ -3,12 +3,16 @@ import personService from "./services/persons";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
+
+const NOTIFICATION_DURATION = 3000;
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [message, setMessage] = useState(null);
   const filteredPersons = persons.filter((p) =>
     filter ? p.name.toLowerCase().includes(filter) : persons
   );
@@ -47,6 +51,12 @@ const App = () => {
       setNewName("");
       setNewNumber("");
       setFilter("");
+
+      // temporarily display notification
+      setMessage(`Changed number for ${returnedPerson.name}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, NOTIFICATION_DURATION);
     });
   };
 
@@ -62,6 +72,12 @@ const App = () => {
       setNewName("");
       setNewNumber("");
       setFilter("");
+
+      // temporarily display notification
+      setMessage(`Added ${returnedPerson.name}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, NOTIFICATION_DURATION);
     });
   };
 
@@ -91,11 +107,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={message} />
       <Filter onFilterChange={handleFilterChange} />
 
       <h3>Add a new</h3>
-
       <PersonForm
         onAddPerson={handleAddBtnClick}
         name={newName}
@@ -105,7 +120,6 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-
       <Persons persons={filteredPersons} onDelete={handleDeletePerson} />
     </div>
   );
