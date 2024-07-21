@@ -18,15 +18,42 @@ const App = () => {
     });
   }, []);
 
-  const addPerson = (event) => {
+  const handleAddBtnClick = (event) => {
     event.preventDefault();
 
     // check if the person is already in the phonebook
-    if (persons.map((person) => person.name).includes(newName)) {
-      alert(`${newName} is already added to the phonebook`);
-      return;
+    const match = persons.find(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    );
+    if (match) {
+      if (
+        window.confirm(
+          `${match.name} is already added to the phonebook.` +
+            ` Replace the old number with a new one?`
+        )
+      )
+        updateNumber(match);
+    } else {
+      addNewPerson();
     }
+  };
 
+  const updateNumber = (person) => {
+    const changedPerson = { ...person, number: newNumber };
+    personService.updatePerson(changedPerson).then((returnedPerson) => {
+      // update frontend state
+      const newPersons = persons.map((p) =>
+        p.id === person.id ? returnedPerson : p
+      );
+      setPersons(newPersons);
+      setFilteredPersons(newPersons);
+      setNewName("");
+      setNewNumber("");
+      setFilter("");
+    });
+  };
+
+  const addNewPerson = () => {
     const personObject = {
       name: newName,
       number: newNumber,
@@ -52,6 +79,7 @@ const App = () => {
       const updatedPersons = persons.filter((p) => p.id !== deleted.id);
       setPersons(updatedPersons);
       setFilteredPersons(updatedPersons);
+      setFilter("");
     });
   };
 
@@ -80,7 +108,7 @@ const App = () => {
       <h3>Add a new</h3>
 
       <PersonForm
-        onAddPerson={addPerson}
+        onAddPerson={handleAddBtnClick}
         name={newName}
         number={newNumber}
         onNameChange={handleNameChange}
