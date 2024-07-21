@@ -31,12 +31,19 @@ const App = () => {
       name: newName,
       number: newNumber,
     };
-    const newPersons = persons.concat(personObject);
-    setPersons(newPersons);
-    setFilteredPersons(newPersons);
-    setNewName("");
-    setNewNumber("");
-    setFilter("");
+    // send new person to the server
+    axios
+      .post("http://localhost:3001/persons", personObject)
+      .then((response) => response.data)
+      .then((returnedPerson) => {
+        // update frontend state
+        const newPersons = persons.concat(returnedPerson);
+        setPersons(newPersons);
+        setFilteredPersons(newPersons);
+        setNewName("");
+        setNewNumber("");
+        setFilter("");
+      });
   };
 
   const handleNameChange = (event) => {
