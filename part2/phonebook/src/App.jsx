@@ -45,19 +45,37 @@ const App = () => {
 
   const updateNumber = (person) => {
     const changedPerson = { ...person, number: newNumber };
-    personService.updatePerson(changedPerson).then((returnedPerson) => {
-      // update frontend state
-      setPersons(persons.map((p) => (p.id === person.id ? returnedPerson : p)));
-      setNewName("");
-      setNewNumber("");
-      setFilter("");
+    personService
+      .updatePerson(changedPerson)
+      .then((returnedPerson) => {
+        // update frontend state
+        setPersons(
+          persons.map((p) => (p.id === person.id ? returnedPerson : p))
+        );
+        setNewName("");
+        setNewNumber("");
+        setFilter("");
 
-      // temporarily display notification
-      setMessage(`Changed number for ${returnedPerson.name}`);
-      setTimeout(() => {
-        setMessage(null);
-      }, NOTIFICATION_DURATION);
-    });
+        // temporarily display notification
+        setMessage({
+          text: `Changed number for ${returnedPerson.name}`,
+          type: "info",
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, NOTIFICATION_DURATION);
+      })
+      .catch((_error) => {
+        // temporarily display error message
+        setMessage({
+          text: `Information for ${person.name} has already been removed from the server`,
+          type: "error",
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, NOTIFICATION_DURATION);
+        setPersons(persons.filter((p) => p.id !== person.id));
+      });
   };
 
   const addNewPerson = () => {
@@ -74,7 +92,10 @@ const App = () => {
       setFilter("");
 
       // temporarily display notification
-      setMessage(`Added ${returnedPerson.name}`);
+      setMessage({
+        text: `Added ${returnedPerson.name}`,
+        type: "info",
+      });
       setTimeout(() => {
         setMessage(null);
       }, NOTIFICATION_DURATION);
@@ -86,10 +107,23 @@ const App = () => {
     if (!window.confirm(`Delete ${personToDelete.name}?`)) {
       return;
     }
-    personService.deletePerson(id).then((deleted) => {
-      setPersons(persons.filter((p) => p.id !== deleted.id));
-      setFilter("");
-    });
+    personService
+      .deletePerson(id)
+      .then((deleted) => {
+        setPersons(persons.filter((p) => p.id !== deleted.id));
+        setFilter("");
+      })
+      .catch((_error) => {
+        // temporarily display error message
+        setMessage({
+          text: `${personToDelete.name} has already been removed from the server`,
+          type: "error",
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, NOTIFICATION_DURATION);
+        setPersons(persons.filter((p) => p.id !== id));
+      });
   };
 
   const handleNameChange = (event) => {
