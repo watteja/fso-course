@@ -6,15 +6,16 @@ import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [filteredPersons, setFilteredPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const filteredPersons = persons.filter((p) =>
+    filter ? p.name.toLowerCase().includes(filter) : persons
+  );
 
   useEffect(() => {
     personService.getAll().then((persons) => {
       setPersons(persons);
-      setFilteredPersons(persons);
     });
   }, []);
 
@@ -42,11 +43,7 @@ const App = () => {
     const changedPerson = { ...person, number: newNumber };
     personService.updatePerson(changedPerson).then((returnedPerson) => {
       // update frontend state
-      const newPersons = persons.map((p) =>
-        p.id === person.id ? returnedPerson : p
-      );
-      setPersons(newPersons);
-      setFilteredPersons(newPersons);
+      setPersons(persons.map((p) => (p.id === person.id ? returnedPerson : p)));
       setNewName("");
       setNewNumber("");
       setFilter("");
@@ -61,9 +58,7 @@ const App = () => {
     // send new person to the server
     personService.createPerson(personObject).then((returnedPerson) => {
       // update frontend state
-      const newPersons = persons.concat(returnedPerson);
-      setPersons(newPersons);
-      setFilteredPersons(newPersons);
+      setPersons(persons.concat(returnedPerson));
       setNewName("");
       setNewNumber("");
       setFilter("");
@@ -76,9 +71,7 @@ const App = () => {
       return;
     }
     personService.deletePerson(id).then((deleted) => {
-      const updatedPersons = persons.filter((p) => p.id !== deleted.id);
-      setPersons(updatedPersons);
-      setFilteredPersons(updatedPersons);
+      setPersons(persons.filter((p) => p.id !== deleted.id));
       setFilter("");
     });
   };
@@ -92,18 +85,14 @@ const App = () => {
   };
 
   const handleFilterChange = (event) => {
-    const newFilter = event.target.value.toLowerCase();
-    setFilter(newFilter);
-    setFilteredPersons(
-      persons.filter((person) => person.name.toLowerCase().includes(newFilter))
-    );
+    setFilter(event.target.value.toLowerCase());
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
 
-      <Filter filter={filter} onFilterChange={handleFilterChange} />
+      <Filter onFilterChange={handleFilterChange} />
 
       <h3>Add a new</h3>
 
