@@ -65,10 +65,10 @@ const App = () => {
           setMessage(null);
         }, NOTIFICATION_DURATION);
       })
-      .catch((_error) => {
+      .catch((error) => {
         // temporarily display error message
         setMessage({
-          text: `Information for ${person.name} has already been removed from the server`,
+          text: error.response.data.error,
           type: "error",
         });
         setTimeout(() => {
@@ -105,7 +105,7 @@ const App = () => {
       .catch((error) => {
         // temporarily display error message
         setMessage({
-          text: error,
+          text: error.response.data.error,
           type: "error",
         });
         setTimeout(() => {
