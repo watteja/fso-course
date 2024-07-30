@@ -4,7 +4,12 @@ const baseUrl = "/api/persons";
 const getAll = () => axios.get(baseUrl).then((response) => response.data);
 
 const createPerson = (newPerson) =>
-  axios.post(baseUrl, newPerson).then((response) => response.data);
+  axios
+    .post(baseUrl, newPerson)
+    .then((createdPerson) => createdPerson.data)
+    .catch((error) => {
+      throw error.response.data.error;
+    });
 
 const deletePerson = (id) =>
   axios.delete(`${baseUrl}/${id}`).then((response) => response.data);

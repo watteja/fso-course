@@ -84,22 +84,34 @@ const App = () => {
       number: newNumber,
     };
     // send new person to the server
-    personService.createPerson(personObject).then((returnedPerson) => {
-      // update frontend state
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
-      setFilter("");
+    personService
+      .createPerson(personObject)
+      .then((returnedPerson) => {
+        // update frontend state
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+        setFilter("");
 
-      // temporarily display notification
-      setMessage({
-        text: `Added ${returnedPerson.name}`,
-        type: "info",
+        // temporarily display notification
+        setMessage({
+          text: `Added ${returnedPerson.name}`,
+          type: "info",
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, NOTIFICATION_DURATION);
+      })
+      .catch((error) => {
+        // temporarily display error message
+        setMessage({
+          text: error,
+          type: "error",
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, NOTIFICATION_DURATION);
       });
-      setTimeout(() => {
-        setMessage(null);
-      }, NOTIFICATION_DURATION);
-    });
   };
 
   const handleDeletePerson = (id) => {
