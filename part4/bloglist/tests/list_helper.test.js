@@ -2,7 +2,7 @@ const { test, describe } = require("node:test");
 const assert = require("node:assert");
 const listHelper = require("../utils/list_helper");
 
-// example data
+// test data
 
 const listWithOneBlog = [
   {
@@ -113,7 +113,7 @@ describe("most blogs", () => {
     assert.strictEqual(listHelper.mostBlogs([]), null);
   });
 
-  test("when list has only one blog equals that blog", () => {
+  test("when list has only one blog is one", () => {
     const result = listHelper.mostBlogs(listWithOneBlog);
     assert.deepEqual(result, { author: "Edsger W. Dijkstra", blogs: 1 });
   });
@@ -121,5 +121,21 @@ describe("most blogs", () => {
   test("of a bigger list is determined correctly", () => {
     const result = listHelper.mostBlogs(listWithManyBlogs);
     assert.deepEqual(result, { author: "Robert C. Martin", blogs: 3 });
+  });
+});
+
+describe("most likes", () => {
+  test("of empty list is null", () => {
+    assert.strictEqual(listHelper.mostLikes([]), null);
+  });
+
+  test("when list has only one blog equals the likes of that blog", () => {
+    const result = listHelper.mostLikes(listWithOneBlog);
+    assert.deepEqual(result, { author: "Edsger W. Dijkstra", likes: 5 });
+  });
+
+  test("of a bigger list is calculated correctly", () => {
+    const result = listHelper.mostLikes(listWithManyBlogs);
+    assert.deepEqual(result, { author: "Edsger W. Dijkstra", likes: 17 });
   });
 });
