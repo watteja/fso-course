@@ -69,9 +69,7 @@ const listWithManyBlogs = [
 // tests
 
 test("dummy returns one", () => {
-  const blogs = [];
-
-  const result = listHelper.dummy(blogs);
+  const result = listHelper.dummy([]);
   assert.strictEqual(result, 1);
 });
 

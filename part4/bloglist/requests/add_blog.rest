@@ -5,9 +5,16 @@ GET http://localhost:3003/api/blogs
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
+# {
+#   "title": "This is a random title",
+#   "author": "John Doe",
+#   "url": "example.com/clever-blogpost",
+#   "likes": 18
+# }
+
 {
-  "title": "This is a random title",
-  "author": "John Doe",
-  "url": "example.com/clever-blogpost",
-  "likes": 18
+  "title": "5 ways to make your code more readable",
+  "author": "Lizzy McReadsalot",
+  "url": "example.com/reader-friendly-0245882",
+  "likes": 22
 }
