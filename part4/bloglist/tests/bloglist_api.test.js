@@ -78,6 +78,22 @@ test("if the likes property is missing from the request, it will default to 0", 
   assert.strictEqual(response.body.likes, 0);
 });
 
+test.only("if the blog is missing title or url, respond with 400 Bad Request", async () => {
+  const blogWithMissingTitle = {
+    author: "Frank Forgetful",
+    url: "example.com/not-even-a-title",
+  };
+  const blogWithMissingUrl = {
+    title: "Blogpost with missing URL",
+    author: "Frank Forgetful",
+  };
+
+  let response = await api.post("/api/blogs").send(blogWithMissingTitle);
+  assert.strictEqual(response.status, 400);
+  response = await api.post("/api/blogs").send(blogWithMissingUrl);
+  assert.strictEqual(response.status, 400);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
