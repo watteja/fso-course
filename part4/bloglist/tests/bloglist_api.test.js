@@ -67,6 +67,17 @@ test("a valid blog can be added", async () => {
   assert(blogPostTitles.includes("Blogpost for testing the POST method"));
 });
 
+test("if the likes property is missing from the request, it will default to 0", async () => {
+  const blogWithMissingLikes = {
+    title: "Blogpost without any registered likes",
+    author: "Urkel the Unpopular",
+    url: "https://www.example.com/nobody-likes-me",
+  };
+
+  const response = await api.post("/api/blogs").send(blogWithMissingLikes);
+  assert.strictEqual(response.body.likes, 0);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
