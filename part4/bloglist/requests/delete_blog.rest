@@ -1,0 +1,5 @@
+GET http://localhost:3003/api/blogs
+
+###
+
+DELETE http://localhost:3003/api/blogs/66b0d89a7a181604e039583d

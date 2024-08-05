@@ -25,9 +25,11 @@ const initialBlogs = [
 beforeEach(async () => {
   // clear the data from the test version of database
   await Blog.deleteMany({});
+  console.log("clear bloglist");
 
   // insert initial data
   await Blog.insertMany(initialBlogs);
+  console.log("inserted initial data");
 });
 
 test("blogs are returned as json", async () => {
@@ -78,7 +80,7 @@ test("if the likes property is missing from the request, it will default to 0", 
   assert.strictEqual(response.body.likes, 0);
 });
 
-test.only("if the blog is missing title or url, respond with 400 Bad Request", async () => {
+test("if the blog is missing title or url, respond with 400 Bad Request", async () => {
   const blogWithMissingTitle = {
     author: "Frank Forgetful",
     url: "example.com/not-even-a-title",
@@ -92,6 +94,17 @@ test.only("if the blog is missing title or url, respond with 400 Bad Request", a
   assert.strictEqual(response.status, 400);
   response = await api.post("/api/blogs").send(blogWithMissingUrl);
   assert.strictEqual(response.status, 400);
+});
+
+test.only("deletion of a blog", async () => {
+  const initialResponse = await api.get("/api/blogs");
+  const blogToDelete = initialResponse.body[0];
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const remainingBlogsResponse = await api.get("/api/blogs");
+  const remainingBlogs = remainingBlogsResponse.body.map((blog) => blog.title);
+  assert.strictEqual(remainingBlogs.length, initialResponse.body.length - 1);
+  assert(!remainingBlogs.includes(blogToDelete.title));
 });
 
 after(async () => {
