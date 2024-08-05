@@ -27,10 +27,7 @@ beforeEach(async () => {
   await Blog.deleteMany({});
 
   // insert initial data
-  let blogObject = new Blog(initialBlogs[0]);
-  await blogObject.save();
-  blogObject = new Blog(initialBlogs[1]);
-  await blogObject.save();
+  await Blog.insertMany(initialBlogs);
 });
 
 test("blogs are returned as json", async () => {
@@ -45,10 +42,29 @@ test("there are two blogs in the list", async () => {
   assert.strictEqual(response.body.length, 2);
 });
 
-// verify that the unique identifier property of the blog posts is named id
-test.only("the unique identifier property of the blog posts is named id", async () => {
+test("the unique identifier property of the blog posts is named id", async () => {
   const response = await api.get("/api/blogs");
   assert(response.body[0].id);
+});
+
+test("a valid blog can be added", async () => {
+  const newBlog = {
+    title: "Blogpost for testing the POST method",
+    author: "Jane Doe",
+    url: "https://www.example.com/testing-post-method",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  assert.strictEqual(response.body.length, initialBlogs.length + 1);
+
+  const blogPostTitles = response.body.map((blog) => blog.title);
+  assert(blogPostTitles.includes("Blogpost for testing the POST method"));
 });
 
 after(async () => {
