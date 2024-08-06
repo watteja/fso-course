@@ -1,0 +1,13 @@
+GET http://localhost:3003/api/blogs
+
+###
+
+PUT http://localhost:3003/api/blogs/66b1cf5e880da1abd0e8ce40
+Content-Type: application/json
+
+{
+    "title": "5 ways to make your code more readable",
+    "author": "Lizzy McReadsalot",
+    "url": "example.com/reader-friendly-0245882",
+    "likes": 26
+}
