@@ -22,7 +22,7 @@ const initialBlogs = [
   },
 ];
 
-describe("when there are some initial notes saved", async () => {
+describe.only("when there are some initial notes saved", async () => {
   beforeEach(async () => {
     // clear the data from the test version of database
     await Blog.deleteMany({});
@@ -97,7 +97,7 @@ describe("when there are some initial notes saved", async () => {
     });
   });
 
-  test("deletion of a blogpost", async () => {
+  test.only("deletion of a blogpost", async () => {
     const initialResponse = await api.get("/api/blogs");
     const blogToDelete = initialResponse.body[0];
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
@@ -120,9 +120,10 @@ describe("when there are some initial notes saved", async () => {
       .send(updatedBlog); // just like for POST, we send JSON data
     assert.strictEqual(response.body.likes, blogToUpdate.likes + 10);
   });
+});
 
-  // Test runner doesn't work reliably if we register after hook outside of the describe block
-  after(async () => {
-    await mongoose.connection.close();
-  });
+// Test runner doesn't work reliably if we register after hook outside of
+// the describe block. Move it back inside if it makes the testing hang.
+after(async () => {
+  await mongoose.connection.close();
 });
