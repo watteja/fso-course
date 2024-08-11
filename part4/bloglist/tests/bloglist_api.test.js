@@ -11,28 +11,13 @@ const helper = require("./test_helper");
 const User = require("../models/user");
 const Blog = require("../models/blog");
 
-const initialBlogs = [
-  {
-    title: "This is a random title",
-    author: "John Doe",
-    url: "https://www.example.com/clever-blogpost",
-    likes: 18,
-  },
-  {
-    title: "5 ways to make your code more readable",
-    author: "Lizzy McBlogsalot",
-    url: "example.com/reader-friendly-0245882",
-    likes: 22,
-  },
-];
-
 describe.only("when there are some initial notes saved", async () => {
   beforeEach(async () => {
     // clear the data from the test version of database
     await Blog.deleteMany({});
 
     // insert initial data
-    await Blog.insertMany(initialBlogs);
+    await Blog.insertMany(helper.initialBlogs);
   });
 
   test("blogs are returned as json", async () => {
@@ -44,12 +29,12 @@ describe.only("when there are some initial notes saved", async () => {
 
   test("all blogs are returned", async () => {
     const response = await api.get("/api/blogs");
-    assert.strictEqual(response.body.length, initialBlogs.length);
+    assert.strictEqual(response.body.length, helper.initialBlogs.length);
   });
 
   test("the unique identifier property of the blog posts is named id", async () => {
-    const response = await api.get("/api/blogs");
-    assert(response.body[0].id);
+    const blogs = await helper.blogsInDb();
+    assert(blogs[0].id);
   });
 
   describe("addition of a new blogpost", async () => {
@@ -66,10 +51,10 @@ describe.only("when there are some initial notes saved", async () => {
         .expect(201)
         .expect("Content-Type", /application\/json/);
 
-      const response = await api.get("/api/blogs");
-      assert.strictEqual(response.body.length, initialBlogs.length + 1);
+      const blogsAtEnd = await helper.blogsInDb();
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
 
-      const blogPostTitles = response.body.map((blog) => blog.title);
+      const blogPostTitles = blogsAtEnd.map((blog) => blog.title);
       assert(blogPostTitles.includes("Blogpost for testing the POST method"));
     });
 
@@ -102,21 +87,19 @@ describe.only("when there are some initial notes saved", async () => {
   });
 
   test.only("deletion of a blogpost", async () => {
-    const initialResponse = await api.get("/api/blogs");
-    const blogToDelete = initialResponse.body[0];
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
-    const remainingBlogsResponse = await api.get("/api/blogs");
-    const remainingBlogs = remainingBlogsResponse.body.map(
-      (blog) => blog.title
-    );
-    assert.strictEqual(remainingBlogs.length, initialResponse.body.length - 1);
-    assert(!remainingBlogs.includes(blogToDelete.title));
+    const blogsAtEnd = await helper.blogsInDb();
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+    const remainingBlogTitles = blogsAtEnd.map((blog) => blog.title);
+    assert(!remainingBlogTitles.includes(blogToDelete.title));
   });
 
   test("changing likes of a blogpost", async () => {
-    const initialResponse = await api.get("/api/blogs");
-    const blogToUpdate = initialResponse.body[0];
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
     const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 10 };
 
     const response = await api
