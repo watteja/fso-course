@@ -4,7 +4,7 @@ GET http://localhost:3003/api/blogs
 
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbmVEIiwiaWQiOiI2NmI5ZjQ0N2RlZWI5MDkxZmY0ZjZhM2IiLCJpYXQiOjE3MjM0NjI4NzR9.RIAjMiO4N-4g3igRN9WJnsQXt8gw6BkRXzAU5ZkZBd0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbmVEIiwiaWQiOiI2NmI5ZjQ0N2RlZWI5MDkxZmY0ZjZhM2IiLCJpYXQiOjE3MjM0NjQyMTAsImV4cCI6MTcyMzQ2NzgxMH0.n5S6yTrsLXRN3GMDjoWouq5QTK4-jyAH3W4PM__EYCo
 
 # {
 #   "title": "This is a random title",
@@ -13,9 +13,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imphb
 #   "likes": 18
 # }
 
+# {
+#   "title": "5 ways to make your code more readable",
+#   "author": "Lizzy McReadsalot",
+#   "url": "example.com/reader-friendly-0245882",
+#   "likes": 22
+# }
+
 {
-  "title": "5 ways to make your code more readable",
-  "author": "Lizzy McReadsalot",
-  "url": "example.com/reader-friendly-0245882",
-  "likes": 22
+  "title": "On inevitability of existential dread",
+  "author": "Boring McBore",
+  "url": "example.com/dreading",
+  "likes": 0
 }
