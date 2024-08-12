@@ -5,8 +5,14 @@ GET http://localhost:3003/api/users
 POST http://localhost:3003/api/users
 Content-Type: application/json
     
+# {
+#   "username": "matt",
+#   "name": "Matthew Smith",
+#   "password": "mysecretpassword"
+# }
+
 {
-  "username": "matt",
-  "name": "Matthew Smith",
-  "password": "mysecretpassword"
+  "username": "janeD",
+  "name": "Jane Doe",
+  "password": "somepass"
 }
