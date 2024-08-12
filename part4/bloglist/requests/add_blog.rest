@@ -4,7 +4,7 @@ GET http://localhost:3003/api/blogs
 
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbmVEIiwiaWQiOiI2NmI5ZjQ0N2RlZWI5MDkxZmY0ZjZhM2IiLCJpYXQiOjE3MjM0NjQyMTAsImV4cCI6MTcyMzQ2NzgxMH0.n5S6yTrsLXRN3GMDjoWouq5QTK4-jyAH3W4PM__EYCo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphbmVEIiwiaWQiOiI2NmI5ZjQ0N2RlZWI5MDkxZmY0ZjZhM2IiLCJpYXQiOjE3MjM0NzAzMDIsImV4cCI6MTcyMzQ3MzkwMn0.usAyZxVmyAxh-0l097mtz0siU7TNCn9pIsDUtZjtTag
 
 # {
 #   "title": "This is a random title",

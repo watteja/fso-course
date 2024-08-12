@@ -1,7 +1,6 @@
-const jwt = require("jsonwebtoken");
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require("../models/user");
+const middleware = require("../utils/middleware");
 
 blogsRouter.get("/", async (_request, response) => {
   const blogs = await Blog.find({}).populate("user", {
@@ -12,13 +11,9 @@ blogsRouter.get("/", async (_request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.post("/", async (request, response) => {
-  // get the object token was based on
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
-  }
-  const user = await User.findById(decodedToken.id);
+blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
+  // get user from request object
+  const user = request.user;
 
   const body = request.body;
   const blog = new Blog({
@@ -40,25 +35,27 @@ blogsRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
-blogsRouter.delete("/:id", async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
-  }
+blogsRouter.delete(
+  "/:id",
+  middleware.userExtractor, // only authorize for deleting and creating blogs
+  async (request, response) => {
+    // get user from request object
+    const user = request.user;
 
-  const blogToDelete = await Blog.findById(request.params.id);
-  if (!blogToDelete) {
-    return response.status(404).json({ error: "blog not found" });
-  }
+    const blogToDelete = await Blog.findById(request.params.id);
+    if (!blogToDelete) {
+      return response.status(404).json({ error: "blog not found" });
+    }
 
-  // toString() of a Mongoose object is the object's ID
-  if (blogToDelete.user.toString() !== decodedToken.id) {
-    return response.status(401).json({ error: "invalid user" });
-  }
+    // blogToDelete.user is not an actual object, just ObjectId
+    if (blogToDelete.user.toString() !== user._id.toString()) {
+      return response.status(401).json({ error: "invalid user" });
+    }
 
-  await Blog.findByIdAndDelete(request.params.id);
-  response.status(204).end();
-});
+    await Blog.findByIdAndDelete(request.params.id);
+    response.status(204).end();
+  }
+);
 
 blogsRouter.put("/:id", async (request, response) => {
   const changedBlog = { ...request.body, likes: request.body.likes };
