@@ -252,8 +252,8 @@ describe("when there is initially one user at db", () => {
   });
 });
 
-// Test runner doesn't work reliably if we register after hook outside of
-// the describe block. Move it back inside if it makes the testing hang.
+// Test runner may not work properly if we register 'after' hook outside
+// of describe block. Move it back inside if it makes the testing hang.
 after(async () => {
   await User.deleteMany({});
   await mongoose.connection.close();
