@@ -15,9 +15,22 @@ describe.only("when there are some initial notes saved", async () => {
   beforeEach(async () => {
     // clear the data from the test version of database
     await Blog.deleteMany({});
+    await User.deleteMany({});
+
+    // create new user to generate token for
+    const passwordHash = await bcrypt.hash("rootUserPassword123", 10);
+    const user = new User({ username: "root", passwordHash });
+    await user.save();
+
+    // assign the created user to every initial blog
+    const userId = await helper.getUserId("root");
+    const blogsWithUser = helper.initialBlogs.map((blog) => ({
+      ...blog,
+      user: userId,
+    }));
 
     // insert initial data
-    await Blog.insertMany(helper.initialBlogs);
+    await Blog.insertMany(blogsWithUser);
   });
 
   test("blogs are returned as json", async () => {
@@ -38,16 +51,8 @@ describe.only("when there are some initial notes saved", async () => {
   });
 
   describe("addition of a new blogpost", async () => {
-    beforeEach(async () => {
-      await User.deleteMany({});
-      // create new user to generate token for
-      const passwordHash = await bcrypt.hash("rootUserPassword123", 10);
-      const user = new User({ username: "root", passwordHash });
-      await user.save();
-    });
-
     test("succeeds with valid data", async () => {
-      // login the created user
+      // log in the created user
       const token = await helper.loginUser(api, "root", "rootUserPassword123");
 
       const newBlog = {
@@ -73,37 +78,56 @@ describe.only("when there are some initial notes saved", async () => {
     });
 
     test("if the likes property is missing from the request, it will default to 0", async () => {
+      const token = await helper.loginUser(api, "root", "rootUserPassword123");
       const blogWithMissingLikes = {
         title: "Blogpost without any registered likes",
         author: "Urkel the Unpopular",
         url: "https://www.example.com/nobody-likes-me",
+        user: await helper.getUserId("root"),
       };
 
-      const response = await api.post("/api/blogs").send(blogWithMissingLikes);
+      const response = await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(blogWithMissingLikes);
       assert.strictEqual(response.body.likes, 0);
     });
 
     test("if the blogpost is missing title or url, respond with 400 Bad Request", async () => {
+      const token = await helper.loginUser(api, "root", "rootUserPassword123");
       const blogWithMissingTitle = {
         author: "Frank Forgetful",
         url: "example.com/not-even-a-title",
+        user: await helper.getUserId("root"),
       };
       const blogWithMissingUrl = {
         title: "Blogpost with missing URL",
         author: "Frank Forgetful",
+        user: await helper.getUserId("root"),
       };
 
-      let response = await api.post("/api/blogs").send(blogWithMissingTitle);
+      let response = await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(blogWithMissingTitle);
       assert.strictEqual(response.status, 400);
-      response = await api.post("/api/blogs").send(blogWithMissingUrl);
+      response = await api
+        .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
+        .send(blogWithMissingUrl);
       assert.strictEqual(response.status, 400);
     });
   });
 
   test.only("deletion of a blogpost", async () => {
+    const token = await helper.loginUser(api, "root", "rootUserPassword123");
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
     assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
