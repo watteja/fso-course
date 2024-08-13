@@ -26,8 +26,25 @@ const usersInDb = async () => {
   return users.map((user) => user.toJSON());
 };
 
+const loginUser = async (api, username, password) => {
+  const response = await api
+    .post("/api/login")
+    .send({ username, password })
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  return response.body.token;
+};
+
+const getUserId = async (username) => {
+  const user = await User.findOne({ username });
+  return user._id;
+};
+
 module.exports = {
   initialBlogs,
   blogsInDb,
   usersInDb,
+  loginUser,
+  getUserId,
 };

@@ -38,15 +38,29 @@ describe.only("when there are some initial notes saved", async () => {
   });
 
   describe("addition of a new blogpost", async () => {
+    beforeEach(async () => {
+      await User.deleteMany({});
+      // create new user to generate token for
+      const passwordHash = await bcrypt.hash("rootUserPassword123", 10);
+      const user = new User({ username: "root", passwordHash });
+      await user.save();
+    });
+
     test("succeeds with valid data", async () => {
+      // login the created user
+      const token = await helper.loginUser(api, "root", "rootUserPassword123");
+
       const newBlog = {
         title: "Blogpost for testing the POST method",
         author: "Jane Doe",
         url: "https://www.example.com/testing-post-method",
+        likes: 2,
+        user: await helper.getUserId("root"),
       };
 
       await api
         .post("/api/blogs")
+        .set("Authorization", `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect("Content-Type", /application\/json/);
@@ -212,11 +226,11 @@ describe("when there is initially one user at db", () => {
 
     assert.strictEqual(usersAtEnd.length, usersAtStart.length);
   });
+});
 
-  // Test runner doesn't work reliably if we register after hook outside of
-  // the describe block. Move it back inside if it makes the testing hang.
-  after(async () => {
-    await User.deleteMany({});
-    await mongoose.connection.close();
-  });
+// Test runner doesn't work reliably if we register after hook outside of
+// the describe block. Move it back inside if it makes the testing hang.
+after(async () => {
+  await User.deleteMany({});
+  await mongoose.connection.close();
 });
