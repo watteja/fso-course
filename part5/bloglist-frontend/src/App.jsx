@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
-import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -24,21 +23,19 @@ const App = () => {
   }, []);
 
   const addBlog = (newBlog) => {
+    setMessage({
+      text: `a new blog ${newBlog.title} by ${newBlog.author} added`,
+      type: "success",
+    });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
     setBlogs(blogs.concat(newBlog));
   };
 
-  const handleLogin = async (username, password) => {
-    try {
-      const user = await loginService.login({ username, password });
-      window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-    } catch {
-      setErrorMessage("Wrong credentials");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
+  const loginUser = (user) => {
+    blogService.setToken(user.token);
+    setUser(user);
   };
 
   const handleLogout = () => {
@@ -48,18 +45,13 @@ const App = () => {
   };
 
   if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification message={errorMessage} />
-        <LoginForm onLogin={handleLogin} />
-      </div>
-    );
+    return <LoginForm onLogin={loginUser} />;
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={message} />
       <p>
         {user.name} logged in<button onClick={handleLogout}>logout</button>
       </p>
