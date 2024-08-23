@@ -37,6 +37,12 @@ const App = () => {
     setBlogs(blogs.concat(newBlog));
   };
 
+  const updateBlog = (updatedBlog) => {
+    setBlogs(
+      blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+    );
+  };
+
   const loginUser = (user) => {
     blogService.setToken(user.token);
     setUser(user);
@@ -64,7 +70,7 @@ const App = () => {
       </Togglable>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onUpdate={updateBlog} />
       ))}
     </div>
   );
