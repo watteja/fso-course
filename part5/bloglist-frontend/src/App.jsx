@@ -43,6 +43,10 @@ const App = () => {
     );
   };
 
+  const deleteBlog = (id) => {
+    setBlogs(blogs.filter((blog) => blog.id !== id));
+  };
+
   const loginUser = (user) => {
     blogService.setToken(user.token);
     setUser(user);
@@ -72,7 +76,13 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} onUpdate={updateBlog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            onUpdate={updateBlog}
+            onDelete={deleteBlog}
+          />
         ))}
     </div>
   );

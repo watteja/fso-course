@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, onUpdate }) => {
+const Blog = ({ blog, user, onUpdate, onDelete }) => {
   const [visible, setVisible] = useState(false);
   const blogStyle = {
     paddingTop: 10,
@@ -16,6 +16,17 @@ const Blog = ({ blog, onUpdate }) => {
     blogService
       .update(changedBlog)
       .then((returnedBlog) => onUpdate(returnedBlog));
+  };
+
+  const handleDelete = () => {
+    // seems safer to check id instead of username
+    if (user.id !== blog.user.id) {
+      return;
+    }
+
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      blogService.deleteBlog(blog.id).then(() => onDelete(blog.id));
+    }
   };
 
   return (
@@ -33,6 +44,9 @@ const Blog = ({ blog, onUpdate }) => {
             likes {blog.likes} <button onClick={handleLike}>like</button>
           </div>
           <div>{blog.author}</div>
+          {user.id === blog.user.id && (
+            <button onClick={handleDelete}>remove</button>
+          )}
         </div>
       )}
     </div>
