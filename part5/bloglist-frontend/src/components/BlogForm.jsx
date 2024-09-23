@@ -1,5 +1,4 @@
 import { useState } from "react";
-import blogService from "../services/blogs";
 
 const BlogForm = ({ onAddBlog }) => {
   const [title, setTitle] = useState("");
@@ -10,40 +9,41 @@ const BlogForm = ({ onAddBlog }) => {
     event.preventDefault();
 
     const blogObject = { title, author, url };
-    blogService.create(blogObject).then((returnedBlog) => {
-      onAddBlog(returnedBlog);
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-    });
+    onAddBlog(blogObject);
+    setTitle("");
+    setAuthor("");
+    setUrl("");
   };
 
   return (
     <form onSubmit={handleAddBlog}>
       <div>
-        title:
+        <label htmlFor="title">title:</label>
         <input
           type="text"
           value={title}
           name="Title"
+          id="title"
           onChange={({ target }) => setTitle(target.value)}
         />
       </div>
       <div>
-        author:
+        <label htmlFor="author">author:</label>
         <input
           type="text"
           value={author}
           name="Author"
+          id="author"
           onChange={({ target }) => setAuthor(target.value)}
         />
       </div>
       <div>
-        url:
+        <label htmlFor="url">url:</label>
         <input
           type="text"
           value={url}
           name="Url"
+          id="url"
           onChange={({ target }) => setUrl(target.value)}
         />
       </div>

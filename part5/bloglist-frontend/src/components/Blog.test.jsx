@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
-import { expect, test } from "vitest";
+import { test, expect, vi } from "vitest";
 
 test("at start renders only blog title and author", () => {
   const blog = {
@@ -35,7 +35,9 @@ test("url and likes are displayed when view button is clicked", async () => {
 
   render(<Blog blog={blog} user={userInfo} />);
   const button = screen.getByText("view");
-  await userEvent.click(button);
+  // start user session
+  const user = userEvent.setup();
+  await user.click(button);
 
   expect(screen.queryByText(blog.url)).toBeDefined();
   expect(screen.queryByText(`likes ${blog.likes}`)).toBeDefined();

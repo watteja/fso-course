@@ -26,15 +26,18 @@ const App = () => {
   }, []);
 
   const addBlog = (newBlog) => {
-    blogFormRef.current.toggleVisibility();
-    setMessage({
-      text: `a new blog ${newBlog.title} by ${newBlog.author} added`,
-      type: "success",
+    // calling API outside the component, for easier unit testing
+    blogService.create(newBlog).then((returnedBlog) => {
+      blogFormRef.current.toggleVisibility();
+      setMessage({
+        text: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        type: "success",
+      });
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+      setBlogs(blogs.concat(returnedBlog));
     });
-    setTimeout(() => {
-      setMessage(null);
-    }, 5000);
-    setBlogs(blogs.concat(newBlog));
   };
 
   const updateBlog = (changedBlog) => {
