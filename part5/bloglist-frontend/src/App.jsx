@@ -37,10 +37,13 @@ const App = () => {
     setBlogs(blogs.concat(newBlog));
   };
 
-  const updateBlog = (updatedBlog) => {
-    setBlogs(
-      blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
-    );
+  const updateBlog = (changedBlog) => {
+    // calling API outside the component, for easier unit testing
+    blogService.update(changedBlog).then((returnedBlog) => {
+      setBlogs(
+        blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
+      );
+    });
   };
 
   const deleteBlog = (id) => {

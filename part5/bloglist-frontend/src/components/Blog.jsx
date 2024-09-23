@@ -13,9 +13,7 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
 
   const handleLike = () => {
     const changedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-    blogService
-      .update(changedBlog)
-      .then((returnedBlog) => onUpdate(returnedBlog));
+    onUpdate(changedBlog);
   };
 
   const handleDelete = () => {
