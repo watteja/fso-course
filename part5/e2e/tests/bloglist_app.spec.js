@@ -66,6 +66,17 @@ describe("Blog app", () => {
         await page.getByText("like").click();
         await expect(page.getByText("likes 1")).toBeVisible();
       });
+
+      test("it can be deleted", async ({ page }) => {
+        await page.getByText("view").click();
+        // accept the confirmation dialog when it appears
+        page.on("dialog", (dialog) => dialog.accept());
+        await page.getByText("remove").click();
+
+        await expect(
+          page.getByText("A new test blog John Doe")
+        ).not.toBeVisible();
+      });
     });
   });
 });

@@ -36,6 +36,8 @@ const App = () => {
       setTimeout(() => {
         setMessage(null);
       }, 5000);
+      // MongoDB's insert method returns just the user id, not the whole object
+      returnedBlog.user = user;
       setBlogs(blogs.concat(returnedBlog));
     });
   };
