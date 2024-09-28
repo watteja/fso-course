@@ -1,7 +1,7 @@
 import { test, expect, describe, beforeEach } from "@playwright/test";
 import { loginWith, createBlog } from "./helper";
 
-const blogContents = {
+const testBlogContents = {
   title: "A new test blog",
   author: "John Doe",
   url: "http://example.com/test-blog",
@@ -10,9 +10,9 @@ const blogContents = {
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
     // reset database
-    await request.post("http://localhost:3003/api/testing/reset");
+    await request.post("/api/testing/reset");
     // add a single user
-    await request.post("http://localhost:3003/api/users", {
+    await request.post("/api/users", {
       data: {
         name: "Matt Tester",
         username: "matt",
@@ -20,7 +20,7 @@ describe("Blog app", () => {
       },
     });
 
-    await page.goto("http://localhost:5173");
+    await page.goto("/");
   });
 
   test("Login form is shown", async ({ page }) => {
@@ -52,23 +52,21 @@ describe("Blog app", () => {
     });
 
     test("a new blog can be created", async ({ page }) => {
-      await createBlog(page, blogContents);
+      await createBlog(page, testBlogContents);
       await expect(page.getByText("A new test blog John Doe")).toBeVisible();
     });
 
     describe("and a blog exists", () => {
       beforeEach(async ({ page }) => {
-        await createBlog(page, blogContents);
+        await createBlog(page, testBlogContents);
       });
 
       test("it can be liked", async ({ page }) => {
-        await page.getByText("view").click();
         await page.getByText("like").click();
         await expect(page.getByText("likes 1")).toBeVisible();
       });
 
       test("it can be deleted", async ({ page }) => {
-        await page.getByText("view").click();
         // accept the confirmation dialog when it appears
         page.on("dialog", (dialog) => dialog.accept());
         await page.getByText("remove").click();
@@ -83,7 +81,7 @@ describe("Blog app", () => {
         await page.getByText("logout").click();
 
         // add a different user
-        await request.post("http://localhost:3003/api/users", {
+        await request.post("/api/users", {
           data: {
             name: "Jane Tester",
             username: "jane",
@@ -95,6 +93,53 @@ describe("Blog app", () => {
         await page.getByText("view").click();
 
         await expect(page.getByText("remove")).not.toBeVisible();
+      });
+    });
+
+    describe("and several blogs exist", () => {
+      // populate the database with some blogs
+      beforeEach(async ({ page }) => {
+        const blogsOfVaryingPopularity = [
+          {
+            title: "Blog 1",
+            author: "Author 1",
+            url: "http://example.com/blog1",
+          },
+          {
+            title: "Blog 2",
+            author: "Author 2",
+            url: "http://example.com/blog2",
+            likes: 4,
+          },
+          {
+            title: "Blog 3",
+            author: "Author 3",
+            url: "http://example.com/blog3",
+            likes: 1,
+          },
+          {
+            title: "Blog 4",
+            author: "Author 4",
+            url: "http://example.com/blog4",
+            likes: 3,
+          },
+        ];
+
+        // add several blogs with likes
+        for (const blog of blogsOfVaryingPopularity) {
+          await createBlog(page, blog);
+        }
+      });
+
+      test("they are arranged by likes, descending", async ({ page }) => {
+        const likes = [];
+        for (const blog of await page.locator(".blog").all()) {
+          const likesDiv = await blog.getByText("likes ").textContent();
+          const likesAmount = likesDiv.split(" ")[1];
+          likes.push(likesAmount);
+        }
+
+        expect(likes).toEqual(["4", "3", "1", "0"]);
       });
     });
   });

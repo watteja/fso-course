@@ -42,9 +42,16 @@ const App = () => {
     });
   };
 
-  const updateBlog = (changedBlog) => {
+  const updateBlog = (blogToChange) => {
+    const changedBlog = {
+      ...blogToChange,
+      likes: blogToChange.likes + 1,
+      user: blogToChange.user.id,
+    };
     // calling API outside the component, for easier unit testing
     blogService.update(changedBlog).then((returnedBlog) => {
+      // persist user info
+      returnedBlog.user = JSON.parse(JSON.stringify(blogToChange.user));
       setBlogs(
         blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
       );

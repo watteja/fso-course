@@ -3,18 +3,6 @@ import blogService from "../services/blogs";
 
 const Blog = ({ blog, user, onUpdate, onDelete }) => {
   const [visible, setVisible] = useState(false);
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
-  const handleLike = () => {
-    const changedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-    onUpdate(changedBlog);
-  };
 
   const handleDelete = () => {
     // seems safer to check id instead of username
@@ -28,7 +16,7 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className="blog">
       <div>
         {blog.title + " " + blog.author}{" "}
         <button onClick={() => setVisible(!visible)}>
@@ -39,7 +27,8 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
         <div>
           <div>{blog.url}</div>
           <div>
-            likes {blog.likes} <button onClick={handleLike}>like</button>
+            likes {blog.likes}{" "}
+            <button onClick={() => onUpdate(blog)}>like</button>
           </div>
           <div>{blog.user.name}</div>
           {user.id === blog.user.id && (
