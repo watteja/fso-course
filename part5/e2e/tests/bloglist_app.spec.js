@@ -77,6 +77,25 @@ describe("Blog app", () => {
           page.getByText("A new test blog John Doe")
         ).not.toBeVisible();
       });
+
+      test("it can't be deleted by someone else", async ({ page, request }) => {
+        // log out the first current user
+        await page.getByText("logout").click();
+
+        // add a different user
+        await request.post("http://localhost:3003/api/users", {
+          data: {
+            name: "Jane Tester",
+            username: "jane",
+            password: "bestpass",
+          },
+        });
+
+        await loginWith(page, "jane", "bestpass");
+        await page.getByText("view").click();
+
+        await expect(page.getByText("remove")).not.toBeVisible();
+      });
     });
   });
 });
