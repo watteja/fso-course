@@ -3,8 +3,13 @@ import { voteFor } from "../reducers/anecdoteReducer";
 
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => {
+    // Filter the anecdotes based on the filter input, case-insensitive
+    const filtered = state.anecdotes.filter((a) =>
+      a.content.toLowerCase().includes(state.filter.toLowerCase())
+    );
+
     // Sort the anecdotes by the number of votes they have
-    return state.sort((a, b) => b.votes - a.votes);
+    return filtered.sort((a, b) => b.votes - a.votes);
   });
   const dispatch = useDispatch();
 
