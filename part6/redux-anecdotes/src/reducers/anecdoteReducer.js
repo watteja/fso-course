@@ -1,3 +1,5 @@
+import { createSlice, current } from "@reduxjs/toolkit";
+
 const anecdotesAtStart = [
   "If it hurts, do it more often",
   "Adding manpower to a late software project makes it later!",
@@ -18,48 +20,25 @@ const asObject = (anecdote) => {
 };
 
 const initialState = anecdotesAtStart.map(asObject);
+// All anecdotes start with 0 votes, so there's no need to sort them
 
-const reducer = (state = initialState, action) => {
-  console.log("state now: ", state);
-  console.log("action", action);
-
-  switch (action.type) {
-    case "VOTE": {
-      const id = action.payload.id;
+const anecdoteSlice = createSlice({
+  name: "anecdotes",
+  initialState,
+  reducers: {
+    voteFor(state, action) {
+      console.log("action", action);
+      const id = action.payload;
       const targetAnecdote = state.find((a) => a.id === id);
-
-      const votedAnecdote = {
-        ...targetAnecdote,
-        votes: targetAnecdote.votes + 1,
-      };
-      return state.map((anecdote) =>
-        anecdote.id !== id ? anecdote : votedAnecdote
-      );
-    }
-    case "NEW_ANECDOTE": {
-      return [...state, action.payload];
-    }
-    default:
-      return state;
-  }
-};
-
-export const voteFor = (id) => {
-  return {
-    type: "VOTE",
-    payload: { id },
-  };
-};
-
-export const createAnecdote = (content) => {
-  return {
-    type: "NEW_ANECDOTE",
-    payload: {
-      content,
-      id: getId(),
-      votes: 0,
+      targetAnecdote.votes += 1; // No need for spread operator, since Immer takes care of immutability
+      console.log("state after", current(state));
     },
-  };
-};
+    createAnecdote(state, action) {
+      const newAnecdote = asObject(action.payload);
+      state.push(newAnecdote); // Immutable due to Immer
+    },
+  },
+});
 
-export default reducer;
+export const { voteFor, createAnecdote } = anecdoteSlice.actions;
+export default anecdoteSlice.reducer;
