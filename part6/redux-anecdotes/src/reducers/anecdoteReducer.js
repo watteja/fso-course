@@ -12,21 +12,28 @@ const anecdoteSlice = createSlice({
       targetAnecdote.votes += 1; // No need for spread operator, since Immer takes care of immutability
       console.log("state after", current(state));
     },
-    createAnecdote(state, action) {
-      state.push(action.payload); // Immutable due to Immer
-    },
     setAnecdotes(_state, action) {
       return action.payload;
+    },
+    appendAnecdote(state, action) {
+      return [...state, action.payload];
     },
   },
 });
 
-export const { voteFor, createAnecdote, setAnecdotes } = anecdoteSlice.actions;
+export const { voteFor, setAnecdotes, appendAnecdote } = anecdoteSlice.actions;
 
 export const initializeAnecdotes = () => {
   return async (dispatch) => {
     const anecdotes = await anecdoteService.getAll();
     dispatch(setAnecdotes(anecdotes));
+  };
+};
+
+export const createAnecdote = (content) => {
+  return async (dispatch) => {
+    const newAnecdote = await anecdoteService.createNew(content);
+    dispatch(appendAnecdote(newAnecdote));
   };
 };
 
