@@ -5,12 +5,16 @@ const anecdoteSlice = createSlice({
   name: "anecdotes",
   initialState: [],
   reducers: {
-    voteFor(state, action) {
+    votedAnecdote(state, action) {
       console.log("action", action);
-      const id = action.payload;
-      const targetAnecdote = state.find((a) => a.id === id);
-      targetAnecdote.votes += 1; // No need for spread operator, since Immer takes care of immutability
-      console.log("state after", current(state));
+      console.log("state before voting", current(state));
+      // replace the old anecdote with the updated one in the state
+      const updatedAnecdote = action.payload;
+      const newState = state.map((anecdote) =>
+        anecdote.id === updatedAnecdote.id ? updatedAnecdote : anecdote
+      );
+      console.log("state after voting", newState);
+      return newState;
     },
     setAnecdotes(_state, action) {
       return action.payload;
@@ -21,7 +25,7 @@ const anecdoteSlice = createSlice({
   },
 });
 
-export const { voteFor, setAnecdotes, appendAnecdote } = anecdoteSlice.actions;
+const { votedAnecdote, setAnecdotes, appendAnecdote } = anecdoteSlice.actions;
 
 export const initializeAnecdotes = () => {
   return async (dispatch) => {
@@ -34,6 +38,16 @@ export const createAnecdote = (content) => {
   return async (dispatch) => {
     const newAnecdote = await anecdoteService.createNew(content);
     dispatch(appendAnecdote(newAnecdote));
+  };
+};
+
+export const voteFor = (anecdote) => {
+  return async (dispatch) => {
+    const adoteCopy = { ...anecdote };
+    adoteCopy.votes += 1;
+    await anecdoteService.update(adoteCopy);
+    // avoid calling the backend again
+    dispatch(votedAnecdote(adoteCopy));
   };
 };
 
