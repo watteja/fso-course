@@ -1,11 +1,29 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
-import { getAnecdotes } from "./requests";
+import { getAnecdotes, updateAdote } from "./requests";
 
 const App = () => {
+  const queryClient = useQueryClient();
+  const voteMutation = useMutation({
+    mutationFn: updateAdote,
+    onSuccess: (updatedAdote) => {
+      // unoptimized query
+      // queryClient.invalidateQueries("anecdotes"); // shorthand for queryClient.invalidateQueries(["anecdotes"])
+
+      // optimized query
+      // second argument can be either an updater function or a new value
+      queryClient.setQueryData(["anecdotes"], (oldData) =>
+        oldData.map((anecdote) =>
+          anecdote.id === updatedAdote.id ? updatedAdote : anecdote
+        )
+      );
+    },
+  });
+
   const handleVote = (anecdote) => {
-    console.log("vote");
+    const updatedAdote = { ...anecdote, votes: anecdote.votes + 1 };
+    voteMutation.mutate(updatedAdote);
   };
 
   const result = useQuery({

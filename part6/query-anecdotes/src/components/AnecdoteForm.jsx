@@ -3,7 +3,6 @@ import { createAnecdote } from "../requests";
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient();
-
   const newAdoteMutation = useMutation({
     mutationFn: createAnecdote,
     onSuccess: (newAdote) => {
@@ -11,6 +10,7 @@ const AnecdoteForm = () => {
       queryClient.setQueryData(["anecdotes"], adotes.concat(newAdote));
     },
   });
+
   const onCreate = (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
