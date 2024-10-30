@@ -6,6 +6,7 @@ import {
 } from "../NotificationContext";
 
 const AnecdoteForm = () => {
+  const dispatch = useNotificationDispatch();
   const queryClient = useQueryClient();
   const newAdoteMutation = useMutation({
     mutationFn: createAnecdote,
@@ -13,9 +14,10 @@ const AnecdoteForm = () => {
       const adotes = queryClient.getQueryData(["anecdotes"]);
       queryClient.setQueryData(["anecdotes"], adotes.concat(newAdote));
     },
+    onError: (error) => {
+      showNotification(dispatch, error.response.data.error, 5);
+    },
   });
-
-  const dispatch = useNotificationDispatch();
 
   const onCreate = (event) => {
     event.preventDefault();
