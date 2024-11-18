@@ -11,10 +11,19 @@ const blogSlice = createSlice({
     appendBlog(state, action) {
       return [...state, action.payload];
     },
+    removeBlog(state, action) {
+      return state.filter((blog) => blog.id !== action.payload);
+    },
+    updateBlog(state, action) {
+      // replace updated blog in the state
+      return state.map((blog) =>
+        blog.id === action.payload.id ? action.payload : blog
+      );
+    },
   },
 });
 
-const { setBlogs, appendBlog } = blogSlice.actions;
+const { setBlogs, appendBlog, removeBlog, updateBlog } = blogSlice.actions;
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
@@ -29,6 +38,29 @@ export const createBlog = (newBlog, user) => {
     // MongoDB's insert method returns just the user id, not the whole object
     returnedBlog.user = user;
     dispatch(appendBlog(returnedBlog));
+  };
+};
+
+export const deleteBlog = (id) => {
+  return async (dispatch) => {
+    await blogService.deleteBlog(id);
+    dispatch(removeBlog(id));
+  };
+};
+
+export const likeBlog = (blogToChange) => {
+  return async (dispatch) => {
+    const changedBlog = {
+      ...blogToChange,
+      likes: blogToChange.likes + 1,
+      user: blogToChange.user.id,
+    };
+    const returnedBlog = await blogService.update(changedBlog);
+
+    // persist user info
+    returnedBlog.user = JSON.parse(JSON.stringify(blogToChange.user));
+
+    dispatch(updateBlog(returnedBlog));
   };
 };
 

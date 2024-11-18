@@ -30,6 +30,7 @@ const App = () => {
 
   const addBlog = (newBlog) => {
     blogFormRef.current.toggleVisibility();
+
     dispatch(createBlog(newBlog, user));
 
     const notification = {
@@ -37,28 +38,6 @@ const App = () => {
       type: "success",
     };
     dispatch(showNotification(notification, 5));
-  };
-
-  const updateBlog = (blogToChange) => {
-    // const changedBlog = {
-    //   ...blogToChange,
-    //   likes: blogToChange.likes + 1,
-    //   user: blogToChange.user.id,
-    // };
-    // // calling API outside the component, for easier unit testing
-    // blogService.update(changedBlog).then((returnedBlog) => {
-    //   // persist user info
-    //   returnedBlog.user = JSON.parse(JSON.stringify(blogToChange.user));
-    //   setBlogs(
-    //     blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
-    //   );
-    // });
-    // TODO in step 3
-  };
-
-  const deleteBlog = (id) => {
-    // setBlogs(blogs.filter((blog) => blog.id !== id));
-    // TODO in step 3
   };
 
   const loginUser = (user) => {
@@ -90,13 +69,7 @@ const App = () => {
       {[...blogs] // copy the array to avoid mutating the original because RTK will shout at you
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            onUpdate={updateBlog}
-            onDelete={deleteBlog}
-          />
+          <Blog key={blog.id} blog={blog} user={user} />
         ))}
     </div>
   );

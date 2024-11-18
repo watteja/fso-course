@@ -1,8 +1,15 @@
 import { useState } from "react";
-import blogService from "../services/blogs";
+import { useDispatch } from "react-redux";
+import { likeBlog, deleteBlog } from "../reducers/blogReducer";
 
-const Blog = ({ blog, user, onUpdate, onDelete }) => {
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const handleLike = () => {
+    dispatch(likeBlog(blog));
+  };
 
   const handleDelete = () => {
     // seems safer to check id instead of username
@@ -11,7 +18,7 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
     }
 
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService.deleteBlog(blog.id).then(() => onDelete(blog.id));
+      dispatch(deleteBlog(blog.id));
     }
   };
 
@@ -27,8 +34,7 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
         <div>
           <div>{blog.url}</div>
           <div>
-            likes {blog.likes}{" "}
-            <button onClick={() => onUpdate(blog)}>like</button>
+            likes {blog.likes} <button onClick={handleLike}>like</button>
           </div>
           <div>{blog.user.name}</div>
           {user.id === blog.user.id && (
