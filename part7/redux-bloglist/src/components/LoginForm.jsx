@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import loginService from "../services/login";
 import Notification from "./Notification";
 import PropTypes from "prop-types";
+import { showNotification } from "../reducers/notificationReducer";
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(null);
+
+  const dispatch = useDispatch();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -18,17 +21,18 @@ const LoginForm = ({ onLogin }) => {
       setUsername("");
       setPassword("");
     } catch {
-      setMessage({ text: "wrong username or password", type: "error" });
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      const notification = {
+        text: "wrong username or password",
+        type: "error",
+      };
+      dispatch(showNotification(notification, 5));
     }
   };
 
   return (
     <>
       <h2>Log in to application</h2>
-      <Notification message={message} />
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username

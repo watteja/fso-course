@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import { showNotification } from "./reducers/notificationReducer";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState(null);
 
   const blogFormRef = useRef();
 
@@ -25,17 +26,19 @@ const App = () => {
     }
   }, []);
 
+  const dispatch = useDispatch();
+
   const addBlog = (newBlog) => {
     // calling API outside the component, for easier unit testing
     blogService.create(newBlog).then((returnedBlog) => {
       blogFormRef.current.toggleVisibility();
-      setMessage({
+
+      const notification = {
         text: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
         type: "success",
-      });
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      };
+      dispatch(showNotification(notification, 5));
+
       // MongoDB's insert method returns just the user id, not the whole object
       returnedBlog.user = user;
       setBlogs(blogs.concat(returnedBlog));
@@ -80,7 +83,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={message} />
+      <Notification />
       <p>
         {user.name} logged in<button onClick={handleLogout}>logout</button>
       </p>
