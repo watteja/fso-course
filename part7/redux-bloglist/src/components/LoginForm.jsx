@@ -3,9 +3,10 @@ import { useDispatch } from "react-redux";
 import loginService from "../services/login";
 import Notification from "./Notification";
 import PropTypes from "prop-types";
+import { setUser } from "../reducers/userReducer";
 import { showNotification } from "../reducers/notificationReducer";
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,7 +18,7 @@ const LoginForm = ({ onLogin }) => {
     try {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
-      onLogin(user);
+      dispatch(setUser(user));
       setUsername("");
       setPassword("");
     } catch {

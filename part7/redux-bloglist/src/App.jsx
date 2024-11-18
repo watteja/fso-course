@@ -1,28 +1,27 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Blog from "./components/Blog";
-import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import { setUser, clearUser } from "./reducers/userReducer";
 import { initializeBlogs, createBlog } from "./reducers/blogReducer";
 import { showNotification } from "./reducers/notificationReducer";
 
 const App = () => {
-  const [user, setUser] = useState(null);
-
+  const dispatch = useDispatch();
   const blogFormRef = useRef();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(setUser(user));
     }
-  }, []);
+  }, [dispatch]);
+  const user = useSelector((state) => state.user);
 
-  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(initializeBlogs());
   }, [dispatch]);
@@ -40,19 +39,13 @@ const App = () => {
     dispatch(showNotification(notification, 5));
   };
 
-  const loginUser = (user) => {
-    blogService.setToken(user.token);
-    setUser(user);
-  };
-
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBloglistUser");
-    setUser(null);
-    blogService.setToken(null); // just in case
+    dispatch(clearUser());
   };
 
   if (user === null) {
-    return <LoginForm onLogin={loginUser} />;
+    return <LoginForm />;
   }
 
   return (
@@ -69,7 +62,7 @@ const App = () => {
       {[...blogs] // copy the array to avoid mutating the original because RTK will shout at you
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} user={user} />
+          <Blog key={blog.id} blog={blog} />
         ))}
     </div>
   );
