@@ -1,12 +1,13 @@
 import { useState } from "react";
 import loginService from "../services/login";
 import Notification from "./Notification";
+import { useNotify } from "../NotificationContext";
 import PropTypes from "prop-types";
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(null);
+  const notifyWith = useNotify();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -18,17 +19,18 @@ const LoginForm = ({ onLogin }) => {
       setUsername("");
       setPassword("");
     } catch {
-      setMessage({ text: "wrong username or password", type: "error" });
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      const notification = {
+        type: "error",
+        text: "wrong username or password",
+      };
+      notifyWith(notification);
     }
   };
 
   return (
     <>
       <h2>Log in to application</h2>
-      <Notification message={message} />
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username
