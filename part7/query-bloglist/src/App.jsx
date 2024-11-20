@@ -1,23 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
-import { useNotify } from "./NotificationContext";
 import Togglable from "./components/Togglable";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
-  const notifyWith = useNotify();
-
-  const blogFormRef = useRef();
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
-
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJSON) {
@@ -26,40 +16,38 @@ const App = () => {
     }
   }, []);
 
-  const addBlog = (newBlog) => {
-    // calling API outside the component, for easier unit testing
-    blogService.create(newBlog).then((returnedBlog) => {
-      blogFormRef.current.toggleVisibility();
-      const notification = {
-        type: "success",
-        text: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-      };
-      notifyWith(notification);
+  // fetch blogs
+  const result = useQuery({
+    queryKey: ["blogs"],
+    queryFn: blogService.getAll,
+    retry: 1,
+  });
+  const blogs = result?.data || [];
 
-      // MongoDB's insert method returns just the user id, not the whole object
-      returnedBlog.user = user;
-      setBlogs(blogs.concat(returnedBlog));
-    });
-  };
+  const [user, setUser] = useState(null);
+
+  const blogFormRef = useRef();
 
   const updateBlog = (blogToChange) => {
-    const changedBlog = {
-      ...blogToChange,
-      likes: blogToChange.likes + 1,
-      user: blogToChange.user.id,
-    };
-    // calling API outside the component, for easier unit testing
-    blogService.update(changedBlog).then((returnedBlog) => {
-      // persist user info
-      returnedBlog.user = JSON.parse(JSON.stringify(blogToChange.user));
-      setBlogs(
-        blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
-      );
-    });
+    // const changedBlog = {
+    //   ...blogToChange,
+    //   likes: blogToChange.likes + 1,
+    //   user: blogToChange.user.id,
+    // };
+    // // calling API outside the component, for easier unit testing
+    // blogService.update(changedBlog).then((returnedBlog) => {
+    //   // persist user info
+    //   returnedBlog.user = JSON.parse(JSON.stringify(blogToChange.user));
+    //   setBlogs(
+    //     blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
+    //   );
+    // });
+    console.log("This will be implemented in exercise 7.12");
   };
 
   const deleteBlog = (id) => {
-    setBlogs(blogs.filter((blog) => blog.id !== id));
+    // setBlogs(blogs.filter((blog) => blog.id !== id));
+    console.log("This will be implemented in exercise 7.12");
   };
 
   const loginUser = (user) => {
@@ -85,20 +73,27 @@ const App = () => {
         {user.name} logged in<button onClick={handleLogout}>logout</button>
       </p>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm onAddBlog={addBlog} />
+        <BlogForm user={user} formRef={blogFormRef} />
       </Togglable>
 
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            onUpdate={updateBlog}
-            onDelete={deleteBlog}
-          />
-        ))}
+      {result.isPending && <div>loading data...</div>}
+
+      {result.isError && (
+        <div>blog service not available due to problems in server</div>
+      )}
+
+      {blogs &&
+        blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              onUpdate={updateBlog}
+              onDelete={deleteBlog}
+            />
+          ))}
     </div>
   );
 };

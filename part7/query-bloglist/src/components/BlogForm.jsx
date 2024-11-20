@@ -1,15 +1,43 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNotify } from "../NotificationContext";
+import blogService from "../services/blogs";
 
-const BlogForm = ({ onAddBlog }) => {
+const BlogForm = ({ user, formRef }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const notifyWith = useNotify();
+
+  // handle adding new blog
+  const queryClient = useQueryClient();
+  const addBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      // MongoDB's insert method returns just the user id, not the whole object
+      newBlog.user = user;
+      const blogs = queryClient.getQueryData(["blogs"]);
+      queryClient.setQueryData(["blogs"], [...blogs, newBlog]);
+    },
+    onError: (error) => {
+      notifyWith({ type: "error", text: error.response.data.error });
+    },
+  });
 
   const handleAddBlog = (event) => {
     event.preventDefault();
 
     const blogObject = { title, author, url };
-    onAddBlog(blogObject);
+    blogService.create(blogObject).then((returnedBlog) => {
+      addBlogMutation.mutate(blogObject);
+      formRef.current.toggleVisibility();
+      const notification = {
+        type: "success",
+        text: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+      };
+      notifyWith(notification);
+    });
+
     setTitle("");
     setAuthor("");
     setUrl("");
