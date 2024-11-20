@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUserValue } from "../UserContext";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
   const queryClient = useQueryClient();
+  const user = useUserValue();
 
   const updateMutation = useMutation({
     mutationFn: blogService.update,

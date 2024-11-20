@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUserValue } from "../UserContext";
 import { useNotify } from "../NotificationContext";
 import blogService from "../services/blogs";
 
-const BlogForm = ({ user, formRef }) => {
+const BlogForm = ({ formRef }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const user = useUserValue();
   const notifyWith = useNotify();
 
   // handle adding new blog

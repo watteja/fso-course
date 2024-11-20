@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useUserValue, useUserDispatch } from "./UserContext";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
@@ -8,15 +9,16 @@ import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const user = useUserValue();
+  const userDispatch = useUserDispatch();
   const blogFormRef = useRef();
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      userDispatch({ type: "SET_USER", payload: user });
     }
-  }, []);
+  }, [userDispatch]);
 
   // fetch blogs
   const result = useQuery({
@@ -26,19 +28,14 @@ const App = () => {
   });
   const blogs = result?.data || [];
 
-  const loginUser = (user) => {
-    blogService.setToken(user.token);
-    setUser(user);
-  };
-
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBloglistUser");
-    setUser(null);
+    userDispatch({ type: "CLEAR_USER" });
     blogService.setToken(null); // just in case
   };
 
   if (user === null) {
-    return <LoginForm onLogin={loginUser} />;
+    return <LoginForm />;
   }
 
   return (
@@ -49,7 +46,7 @@ const App = () => {
         {user.name} logged in<button onClick={handleLogout}>logout</button>
       </p>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm user={user} formRef={blogFormRef} />
+        <BlogForm formRef={blogFormRef} />
       </Togglable>
 
       {result.isPending && <div>loading data...</div>}
@@ -61,7 +58,7 @@ const App = () => {
       {blogs &&
         blogs
           .sort((a, b) => b.likes - a.likes)
-          .map((blog) => <Blog key={blog.id} blog={blog} user={user} />)}
+          .map((blog) => <Blog key={blog.id} blog={blog} />)}
     </div>
   );
 };

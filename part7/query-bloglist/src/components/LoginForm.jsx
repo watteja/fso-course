@@ -1,12 +1,15 @@
 import { useState } from "react";
 import loginService from "../services/login";
+import blogService from "../services/blogs";
 import Notification from "./Notification";
+import { useUserDispatch } from "../UserContext";
 import { useNotify } from "../NotificationContext";
 import PropTypes from "prop-types";
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const userDispatch = useUserDispatch();
   const notifyWith = useNotify();
 
   const handleLogin = async (event) => {
@@ -15,7 +18,8 @@ const LoginForm = ({ onLogin }) => {
     try {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
-      onLogin(user);
+      blogService.setToken(user.token);
+      userDispatch({ type: "SET_USER", payload: user });
       setUsername("");
       setPassword("");
     } catch {
@@ -56,10 +60,6 @@ const LoginForm = ({ onLogin }) => {
       </form>
     </>
   );
-};
-
-LoginForm.propTypes = {
-  onLogin: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
