@@ -1,9 +1,35 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, user, onUpdate, onDelete }) => {
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
+  const queryClient = useQueryClient();
 
+  const updateMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: (returnedBlog) => {
+      // persist user info
+      returnedBlog.user = blog.user;
+
+      queryClient.setQueryData(["blogs"], (oldData) =>
+        oldData.map((b) => (b.id === returnedBlog.id ? returnedBlog : b))
+      );
+    },
+  });
+  const handleUpdate = () => {
+    const updatedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+    updateMutation.mutate(updatedBlog);
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: blogService.deleteBlog,
+    onSuccess: () => {
+      queryClient.setQueryData(["blogs"], (oldData) =>
+        oldData.filter((b) => b.id !== blog.id)
+      );
+    },
+  });
   const handleDelete = () => {
     // seems safer to check id instead of username
     if (user.id !== blog.user.id) {
@@ -11,7 +37,7 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
     }
 
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService.deleteBlog(blog.id).then(() => onDelete(blog.id));
+      deleteMutation.mutate(blog.id);
     }
   };
 
@@ -27,8 +53,7 @@ const Blog = ({ blog, user, onUpdate, onDelete }) => {
         <div>
           <div>{blog.url}</div>
           <div>
-            likes {blog.likes}{" "}
-            <button onClick={() => onUpdate(blog)}>like</button>
+            likes {blog.likes} <button onClick={handleUpdate}>like</button>
           </div>
           <div>{blog.user.name}</div>
           {user.id === blog.user.id && (
