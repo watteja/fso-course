@@ -1,19 +1,10 @@
 import { useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import blogService from "../services/blogs";
+import { Link } from "react-router-dom";
 import BlogForm from "./BlogForm";
-import Blog from "./Blog";
 import Togglable from "./Togglable";
 
-const BlogList = () => {
+const BlogList = ({ result }) => {
   const blogFormRef = useRef();
-
-  // fetch blogs
-  const result = useQuery({
-    queryKey: ["blogs"],
-    queryFn: blogService.getAll,
-    retry: 1,
-  });
   const blogs = result?.data || [];
   return (
     <>
@@ -30,7 +21,11 @@ const BlogList = () => {
       {blogs &&
         blogs
           .sort((a, b) => b.likes - a.likes)
-          .map((blog) => <Blog key={blog.id} blog={blog} />)}
+          .map((blog) => (
+            <div key={blog.id} className="blog">
+              <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+            </div>
+          ))}
     </>
   );
 };
