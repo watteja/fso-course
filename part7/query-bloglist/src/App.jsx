@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes, useMatch } from "react-router-dom";
+import { Route, Routes, useMatch, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useUserValue, useUserDispatch } from "./UserContext";
 import blogService from "./services/blogs";
@@ -59,11 +59,15 @@ const App = () => {
 
   return (
     <div>
+      <div className="menu">
+        <Link to="/">blogs</Link>
+        <Link to="/users">users</Link>
+        <span>{user.name} logged in</span>
+        <button onClick={handleLogout}>logout</button>
+      </div>
       <h2>blog app</h2>
       <Notification />
-      <p>
-        {user.name} logged in<button onClick={handleLogout}>logout</button>
-      </p>
+
       <Routes>
         <Route path="/" element={<BlogList result={blogsResult} />} />
         <Route path="/users" element={<Users result={usersResult} />} />

@@ -15,6 +15,14 @@
   color: red;
 }
 
+.menu {
+  background: lightgrey;
+}
+
+.menu > * {
+  margin: 5px;
+}
+
 .blog {
   padding-top: 10px;
   padding-left: 2px;
