@@ -2,6 +2,8 @@ The backend part of the _Phonebook_ application, created through exercises for F
 
 ~~The application lives at https://matts-phonebook.fly.dev/~~
 
+To be hosted easily with fly.io (again), this application should exist in its own repo.
+
 **Please note**
 
 - The directory structure is slightly different from the example _Notes_ project.
