@@ -1,28 +1,3 @@
-.notification {
-  background: lightgrey;
-  font-size: 20px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.success {
-  color: green;
-}
-
-.error {
-  color: red;
-}
-
-.menu {
-  background: lightgrey;
-}
-
-.menu > * {
-  margin: 5px;
-}
-
 .blog {
   padding-top: 10px;
   padding-left: 2px;

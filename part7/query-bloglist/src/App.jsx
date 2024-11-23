@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Route, Routes, useMatch, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { AppBar, Toolbar, Button } from "@mui/material";
 import { useUserValue, useUserDispatch } from "./UserContext";
 import blogService from "./services/blogs";
 import userService from "./services/users";
@@ -59,13 +60,20 @@ const App = () => {
 
   return (
     <div>
-      <div className="menu">
-        <Link to="/">blogs</Link>
-        <Link to="/users">users</Link>
-        <span>{user.name} logged in</span>
-        <button onClick={handleLogout}>logout</button>
-      </div>
-      <h2>blog app</h2>
+      <AppBar position="static">
+        <Toolbar>
+          <Button color="inherit" component={Link} to="/">
+            blogs
+          </Button>
+          <Button color="inherit" component={Link} to="/users">
+            users
+          </Button>
+          {user.name} logged in
+          <Button color="inherit" component={Link} onClick={handleLogout}>
+            logout
+          </Button>
+        </Toolbar>
+      </AppBar>
       <Notification />
 
       <Routes>

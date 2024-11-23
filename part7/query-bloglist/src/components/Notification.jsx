@@ -1,3 +1,4 @@
+import { Alert } from "@mui/material";
 import { useNotificationValue } from "../NotificationContext";
 
 const Notification = () => {
@@ -6,11 +7,7 @@ const Notification = () => {
     return null;
   }
 
-  return (
-    <div className={`notification ${notification.type}`}>
-      {notification.text}
-    </div>
-  );
+  return <Alert severity={notification.type}>{notification.text}</Alert>;
 };
 
 export default Notification;

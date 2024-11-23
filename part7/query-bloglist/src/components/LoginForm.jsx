@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TextField, Button } from "@mui/material";
 import loginService from "../services/login";
 import blogService from "../services/blogs";
 import Notification from "./Notification";
@@ -36,26 +37,23 @@ const LoginForm = () => {
       <Notification />
       <form onSubmit={handleLogin}>
         <div>
-          username
-          <input
-            type="text"
+          <TextField
+            label="username"
             value={username}
-            name="Username"
-            data-testid="username"
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
-          password
-          <input
+          <TextField
+            label="password"
             type="password"
             value={password}
-            name="Password"
-            data-testid="password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <Button variant="contained" color="primary" type="submit">
+          login
+        </Button>
       </form>
     </>
   );

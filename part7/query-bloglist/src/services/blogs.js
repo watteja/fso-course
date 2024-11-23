@@ -29,8 +29,6 @@ const update = async (changedBlog) => {
 };
 
 const addComment = async ({ id, comment }) => {
-  console.log("id", id);
-  console.log("comment", comment);
   const response = await axios.post(`${baseUrl}/${id}/comments`, { comment });
   return response.data;
 };

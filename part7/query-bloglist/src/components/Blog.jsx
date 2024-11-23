@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { useUserValue } from "../UserContext";
 import blogService from "../services/blogs";
 
@@ -7,6 +8,7 @@ const Blog = ({ blog }) => {
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
   const user = useUserValue();
+  const navigate = useNavigate();
 
   const updateMutation = useMutation({
     mutationFn: blogService.update,
@@ -40,6 +42,7 @@ const Blog = ({ blog }) => {
 
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       deleteMutation.mutate(blog.id);
+      navigate("/");
     }
   };
 
