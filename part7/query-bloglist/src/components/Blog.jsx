@@ -60,6 +60,22 @@ const Blog = ({ blog }) => {
           <button onClick={handleDelete}>remove</button>
         )}
       </div>
+
+      {blog.comments.length > 0 && (
+        <div>
+          <h3>comments</h3>
+          <ul>
+            {blog.comments.map((comment, index) => (
+              // Using comment-index combination is not ideal, but
+              // still better than using index alone. The React' internal
+              // optimization is hampered only when identical comments are
+              // added, which should happen rarely.
+              // If model becomes more complex, use a unique id for comments.
+              <li key={`${comment}-${index}`}>{comment}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 };

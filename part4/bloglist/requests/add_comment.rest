@@ -1,0 +1,12 @@
+GET http://localhost:3003/api/blogs
+
+###
+
+# The blog post is "Not Jane's blog"
+POST http://localhost:3003/api/blogs/66bf47a223b8c6ea34fb4180/comments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHQiLCJpZCI6IjY2Yjg5YWU0ZjBkYzY0ZGYwZjUwMWVjNSIsImlhdCI6MTczMjM1MDcyOCwiZXhwIjoxNzMyMzU0MzI4fQ.Wv_XEWInQhuWYuNsjTbiXuKwCC3t1n7M3FPf1rgbmIM
+
+{
+  "comment": "This comment is sent via REST client extension"
+}
