@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Typography, Link } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import BlogForm from "./BlogForm";
 import Togglable from "./Togglable";
 

@@ -5,7 +5,6 @@ import { UserProvider } from "./UserContext";
 import { NotificationProvider } from "./NotificationContext";
 import { Container, ThemeProvider, createTheme } from "@mui/material";
 import App from "./App";
-import "./index.css";
 import { amber, blue, lightBlue } from "@mui/material/colors";
 
 const queryClient = new QueryClient();
