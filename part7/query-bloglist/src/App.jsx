@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Route, Routes, useMatch, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AppBar, Toolbar, Button } from "@mui/material";
+import { AppBar, Toolbar, Button, Box, Typography } from "@mui/material";
 import { useUserValue, useUserDispatch } from "./UserContext";
 import blogService from "./services/blogs";
 import userService from "./services/users";
@@ -68,8 +68,16 @@ const App = () => {
           <Button color="inherit" component={Link} to="/users">
             users
           </Button>
-          {user.name} logged in
-          <Button color="inherit" component={Link} onClick={handleLogout}>
+          <Box display="flex" justifyContent="flex-end" width="100%">
+            <Typography variant="body2">{user.name} logged in</Typography>
+          </Box>
+          <Button
+            color="inherit"
+            variant="outlined"
+            component={Link}
+            sx={{ ml: 2 }}
+            onClick={handleLogout}
+          >
             logout
           </Button>
         </Toolbar>

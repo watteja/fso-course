@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Box, TextField, Button } from "@mui/material";
 import { useUserValue } from "../UserContext";
 import { useNotify } from "../NotificationContext";
 import blogService from "../services/blogs";
@@ -46,42 +47,37 @@ const BlogForm = ({ formRef }) => {
   };
 
   return (
-    <form onSubmit={handleAddBlog}>
-      <div>
-        <label htmlFor="title">title:</label>
-        <input
-          type="text"
-          value={title}
-          name="Title"
-          id="title"
-          data-testid="title"
-          onChange={({ target }) => setTitle(target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="author">author:</label>
-        <input
-          type="text"
-          value={author}
-          name="Author"
-          id="author"
-          data-testid="author"
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="url">url:</label>
-        <input
-          type="text"
-          value={url}
-          name="Url"
-          id="url"
-          data-testid="url"
-          onChange={({ target }) => setUrl(target.value)}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>
+    <Box
+      component="form"
+      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+      onSubmit={handleAddBlog}
+    >
+      <TextField
+        label="title"
+        value={title}
+        sx={{ alignSelf: "flex-start" }}
+        onChange={({ target }) => setTitle(target.value)}
+      />
+      <TextField
+        label="author"
+        value={author}
+        sx={{ alignSelf: "flex-start" }}
+        onChange={({ target }) => setAuthor(target.value)}
+      />
+      <TextField
+        label="url"
+        value={url}
+        sx={{ alignSelf: "flex-start" }}
+        onChange={({ target }) => setUrl(target.value)}
+      />
+      <Button
+        variant="contained"
+        type="submit"
+        sx={{ alignSelf: "flex-start" }}
+      >
+        create
+      </Button>
+    </Box>
   );
 };
 

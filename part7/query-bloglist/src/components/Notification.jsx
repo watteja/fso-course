@@ -7,7 +7,11 @@ const Notification = () => {
     return null;
   }
 
-  return <Alert severity={notification.type}>{notification.text}</Alert>;
+  return (
+    <Alert severity={notification.type} sx={{ mt: 2, mb: 2 }}>
+      {notification.text}
+    </Alert>
+  );
 };
 
 export default Notification;

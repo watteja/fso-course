@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
 import loginService from "../services/login";
 import blogService from "../services/blogs";
 import Notification from "./Notification";
@@ -33,28 +33,35 @@ const LoginForm = () => {
 
   return (
     <>
-      <h2>Log in to application</h2>
+      <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
+        Log in to application
+      </Typography>
       <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          <TextField
-            label="username"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          <TextField
-            label="password"
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <Button variant="contained" color="primary" type="submit">
+      <Box
+        component="form"
+        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        onSubmit={handleLogin}
+      >
+        <TextField
+          label="username"
+          value={username}
+          onChange={({ target }) => setUsername(target.value)}
+        />
+        <TextField
+          label="password"
+          type="password"
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ alignSelf: "flex-start" }}
+          type="submit"
+        >
           login
         </Button>
-      </form>
+      </Box>
     </>
   );
 };
