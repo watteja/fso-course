@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserValue } from "../UserContext";
 import blogService from "../services/blogs";
 
 const Blog = ({ blog }) => {
+  const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
   const user = useUserValue();
 
@@ -41,6 +43,22 @@ const Blog = ({ blog }) => {
     }
   };
 
+  const addCommentMutation = useMutation({
+    mutationFn: blogService.addComment,
+    onSuccess: (returnedBlog) => {
+      // persist user info
+      returnedBlog.user = blog.user;
+
+      queryClient.setQueryData(["blogs"], (oldData) =>
+        oldData.map((b) => (b.id === returnedBlog.id ? returnedBlog : b))
+      );
+    },
+  });
+  const handleAddComment = (event) => {
+    event.preventDefault();
+    addCommentMutation.mutate({ id: blog.id, comment });
+  };
+
   if (!blog) {
     return null;
   }
@@ -64,6 +82,15 @@ const Blog = ({ blog }) => {
       {blog.comments.length > 0 && (
         <div>
           <h3>comments</h3>
+          <form onSubmit={handleAddComment}>
+            <input
+              type="text"
+              value={comment}
+              name="Comment"
+              onChange={({ target }) => setComment(target.value)}
+            />
+            <button type="submit">add comment</button>
+          </form>
           <ul>
             {blog.comments.map((comment, index) => (
               // Using comment-index combination is not ideal, but
