@@ -2,11 +2,12 @@ import PropTypes from "prop-types";
 import { useQuery } from "@apollo/client";
 
 import { ALL_AUTHORS } from "../queries";
+import ChangeAuthor from "./ChangeAuthor";
 
-const Authors = (props) => {
+const Authors = ({ show, showError }) => {
   const result = useQuery(ALL_AUTHORS);
 
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
@@ -35,12 +36,14 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
+      <ChangeAuthor showError={showError} />
     </div>
   );
 };
 
 Authors.propTypes = {
   show: PropTypes.bool.isRequired,
+  showError: PropTypes.func.isRequired,
 };
 
 export default Authors;
