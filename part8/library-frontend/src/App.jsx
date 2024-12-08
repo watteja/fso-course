@@ -29,7 +29,7 @@ const App = () => {
 
       <Books show={page === "books"} />
 
-      <NewBook show={page === "add"} onError={notify} />
+      <NewBook show={page === "add"} showError={notify} />
     </div>
   );
 };
