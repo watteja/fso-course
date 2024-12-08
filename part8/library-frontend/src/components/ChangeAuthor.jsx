@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import PropTypes from "prop-types";
+import Select from "react-select";
 
 import { EDIT_AUTHOR } from "../queries";
 
-const ChangeAuthor = ({ showError }) => {
-  const [name, setName] = useState("");
+const ChangeAuthor = ({ authors, showError }) => {
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [born, setBorn] = useState("");
 
   const [editAuthor, result] = useMutation(EDIT_AUTHOR, {
@@ -24,9 +25,11 @@ const ChangeAuthor = ({ showError }) => {
   const submit = async (event) => {
     event.preventDefault();
 
-    editAuthor({ variables: { name, setBornTo: parseInt(born) } });
+    editAuthor({
+      variables: { name: selectedAuthor.value, setBornTo: parseInt(born) },
+    });
 
-    setName("");
+    setSelectedAuthor(null);
     setBorn("");
   };
 
@@ -34,13 +37,11 @@ const ChangeAuthor = ({ showError }) => {
     <div>
       <h3>Set birthyear</h3>
       <form onSubmit={submit}>
-        <div>
-          name
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
-        </div>
+        <Select
+          defaultValue={selectedAuthor}
+          onChange={setSelectedAuthor}
+          options={authors}
+        />
         <div>
           born
           <input
@@ -55,6 +56,7 @@ const ChangeAuthor = ({ showError }) => {
 };
 
 ChangeAuthor.propTypes = {
+  authors: PropTypes.array.isRequired,
   showError: PropTypes.func.isRequired,
 };
 

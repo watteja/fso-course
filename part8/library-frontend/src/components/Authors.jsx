@@ -17,6 +17,11 @@ const Authors = ({ show, showError }) => {
 
   const authors = result.data.allAuthors;
 
+  const authorOptions = authors.map((a) => ({
+    value: a.name,
+    label: a.name,
+  }));
+
   return (
     <div>
       <h2>authors</h2>
@@ -36,7 +41,7 @@ const Authors = ({ show, showError }) => {
           ))}
         </tbody>
       </table>
-      <ChangeAuthor showError={showError} />
+      <ChangeAuthor authors={authorOptions} showError={showError} />
     </div>
   );
 };
