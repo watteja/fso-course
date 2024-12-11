@@ -10,8 +10,8 @@ if (process.argv.length !== 2) {
 
 import mongoose from "mongoose";
 mongoose.set("strictQuery", false);
-import Author from "./models/Author.js";
-import Book from "./models/Book.js";
+import Author from "./models/author.js";
+import Book from "./models/book.js";
 import "dotenv/config.js";
 
 const MONGODB_URI = process.env.MONGODB_URI;
