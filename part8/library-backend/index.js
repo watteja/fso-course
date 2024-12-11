@@ -6,6 +6,7 @@ mongoose.set("strictQuery", false);
 import Author from "./models/Author.js";
 import Book from "./models/Book.js";
 import "dotenv/config.js";
+import { GraphQLError } from "graphql";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -87,12 +88,34 @@ const resolvers = {
       // Create author if they are not already in the list
       if (!author) {
         author = new Author({ name: args.author });
-        await author.save();
+        try {
+          await author.save();
+        } catch (error) {
+          // Custom errors will only be thrown if inbuilt GraphQL errors
+          // hadn't been thrown first
+          throw new GraphQLError("Saving new author failed", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
 
-      const book = new Book({ ...args, author: author._id });
-      await book.save();
-      return book;
+      try {
+        const book = new Book({ ...args, author: author._id });
+        await book.save();
+        return book;
+      } catch (error) {
+        throw new GraphQLError("Adding new book failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
+      }
     },
 
     editAuthor: async (_root, args) => {
@@ -102,7 +125,18 @@ const resolvers = {
       }
 
       author.born = args.setBornTo;
-      await author.save();
+      try {
+        await author.save();
+      } catch (error) {
+        throw new GraphQLError("Updating author failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.name,
+            error,
+          },
+        });
+      }
+
       return author;
     },
   },
