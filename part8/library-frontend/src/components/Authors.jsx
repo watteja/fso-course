@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import { ALL_AUTHORS } from "../queries";
 import ChangeAuthor from "./ChangeAuthor";
 
-const Authors = ({ show, showError }) => {
+const Authors = ({ show, loggedIn, showError }) => {
   const result = useQuery(ALL_AUTHORS);
 
   if (!show) {
@@ -41,13 +41,16 @@ const Authors = ({ show, showError }) => {
           ))}
         </tbody>
       </table>
-      <ChangeAuthor authors={authorOptions} showError={showError} />
+      {loggedIn && (
+        <ChangeAuthor authors={authorOptions} showError={showError} />
+      )}
     </div>
   );
 };
 
 Authors.propTypes = {
   show: PropTypes.bool.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
   showError: PropTypes.func.isRequired,
 };
 
