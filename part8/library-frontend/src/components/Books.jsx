@@ -34,6 +34,13 @@ const Books = (props) => {
   }, []);
   genres.push("all genres");
 
+  const handleGenreClick = (genre) => {
+    setGenre(genre);
+    // refetch data in case new book has been added
+    // source: https://www.apollographql.com/docs/react/data/queries#refetching
+    result.refetch({ genre: genre === "all genres" ? null : genre });
+  };
+
   return (
     <div>
       <h2>books</h2>
@@ -62,7 +69,7 @@ const Books = (props) => {
       </table>
 
       {genres.map((genre) => (
-        <button key={genre} onClick={() => setGenre(genre)}>
+        <button key={genre} onClick={() => handleGenreClick(genre)}>
           {genre}
         </button>
       ))}
