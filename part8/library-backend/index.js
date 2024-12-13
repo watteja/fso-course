@@ -29,6 +29,8 @@ mongoose
     console.log("error connecting to MongoDB:", error.message);
   });
 
+mongoose.set("debug", true); // TODO: remove after exercise
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,

@@ -26,9 +26,23 @@ const resolvers = {
         query.genres = { $in: [args.genre] };
       }
 
-      return Book.find(query).populate("author");
+      const books = Book.find(query).populate("author");
+      return books.map((book) => book.toJSON());
     },
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () => {
+      // storing the book count in the author object to avoid n+1 problem
+      const authors = await Author.find({});
+      const books = await Book.find({});
+
+      return authors.map((author) => {
+        const bookCount = books.filter(
+          (book) => book.author.toString() === author._id.toString()
+        ).length;
+
+        // use toJSON() to remove the MongoDB specific fields (starting with _)
+        return { ...author.toJSON(), bookCount };
+      });
+    },
     me: (_root, _args, context) => context.currentUser,
   },
 
@@ -82,7 +96,7 @@ const resolvers = {
       // Publish the added book to the subscribers
       pubsub.publish("BOOK_ADDED", { bookAdded: book });
 
-      return book;
+      return book.toJSON();
     },
     editAuthor: async (_root, args, context) => {
       // Check if user is logged in
