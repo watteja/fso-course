@@ -6,7 +6,25 @@ import NewBook from "./components/NewBook";
 import Notify from "./components/Notify";
 import LoginForm from "./components/LoginForm";
 import Recommended from "./components/Recommended";
-import { BOOK_ADDED } from "./queries";
+import { BOOK_ADDED, ALL_BOOKS } from "./queries";
+
+// function that takes care of manipulating cache
+export const updateCache = (cache, query, addedBook) => {
+  // helper that is used to eliminate saving same book twice
+  const uniqueByTitle = (arr) => {
+    let seen = new Set();
+    return arr.filter((item) => {
+      let title = item.title;
+      return seen.has(title) ? false : seen.add(title);
+    });
+  };
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqueByTitle(allBooks.concat(addedBook)),
+    };
+  });
+};
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -15,8 +33,10 @@ const App = () => {
   const client = useApolloClient();
 
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
+    onData: ({ data, client }) => {
       window.alert(`Book added: ${data.data.bookAdded.title}`);
+
+      updateCache(client.cache, { query: ALL_BOOKS }, data.data.bookAdded);
     },
   });
 
