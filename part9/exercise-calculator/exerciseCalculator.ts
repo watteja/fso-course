@@ -17,12 +17,11 @@ interface Result {
 }
 
 const calculateExercises = (
-  daily_exercise_hours: number[],
+  deh: number[], // daily exercise hours
   target: number
 ): Result => {
   const average =
-    daily_exercise_hours.reduce((acc, el) => acc + el, 0) /
-    daily_exercise_hours.length;
+    Math.round((deh.reduce((acc, el) => acc + el, 0) / deh.length) * 100) / 100;
 
   let ratingDescription: Description;
   let rating: Rating;
@@ -38,8 +37,8 @@ const calculateExercises = (
   }
 
   return {
-    days: daily_exercise_hours.length,
-    trainingDays: daily_exercise_hours.filter((d) => d > 0).length,
+    days: deh.length,
+    trainingDays: deh.filter((d) => d > 0).length,
     target,
     average,
     targetReached: average >= target,
@@ -48,6 +47,35 @@ const calculateExercises = (
   };
 };
 
-const daily_exercise_hours = [3, 0, 2, 4.5, 0, 3, 1];
-const target = 2;
-console.log(calculateExercises(daily_exercise_hours, target));
+// console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+
+interface ExerciseInput {
+  target: number;
+  deh: number[]; // daily exercise hours
+}
+
+const getValidExerciseArgs = (inputValues: string[]): ExerciseInput => {
+  if (inputValues.length < 2) {
+    throw new Error("Not enough arguments");
+  }
+
+  if (inputValues.some((a) => isNaN(Number(a)))) {
+    throw new Error("One or more invalid arguments");
+  }
+
+  return {
+    target: Number(inputValues[0]),
+    deh: inputValues.slice(1).map((a) => Number(a)),
+  };
+};
+
+try {
+  const { target, deh } = getValidExerciseArgs(process.argv.slice(2));
+  console.log(calculateExercises(deh, target));
+} catch (e: unknown) {
+  if (e instanceof Error) {
+    console.error("Error:", e.message);
+  } else {
+    console.error("Something went wrong");
+  }
+}
