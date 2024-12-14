@@ -1,0 +1,28 @@
+{
+  "name": "exercise-calculator",
+  "version": "1.0.0",
+  "description": "Introductory TypeScript app",
+  "main": "index.js",
+  "scripts": {
+    "ts-node": "ts-node",
+    "calculateBmi": "ts-node bmiCalculator.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/watteja/fso-course.git"
+  },
+  "keywords": [
+    "TypeScript"
+  ],
+  "author": "watteja",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/watteja/fso-course/issues"
+  },
+  "homepage": "https://github.com/watteja/fso-course#readme",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
