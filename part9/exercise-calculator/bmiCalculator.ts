@@ -1,4 +1,4 @@
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
   const bmi = weight / Math.pow(height / 100, 2);
 
   if (bmi < 18.5) {
@@ -34,13 +34,15 @@ const getValidBmiArgs = (inputValues: string[]): BmiInput => {
   };
 };
 
-try {
-  const { height, weight } = getValidBmiArgs(process.argv.slice(2));
-  console.log(calculateBmi(height, weight));
-} catch (e: unknown) {
-  if (e instanceof Error) {
-    console.error("Error:", e.message);
-  } else {
-    console.error("Something went wrong");
+if (require.main === module) {
+  try {
+    const { height, weight } = getValidBmiArgs(process.argv.slice(2));
+    console.log(calculateBmi(height, weight));
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error("Error:", e.message);
+    } else {
+      console.error("Something went wrong");
+    }
   }
 }
