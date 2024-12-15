@@ -1,7 +1,7 @@
 type Rating = 1 | 2 | 3;
 
 type Description =
-  | "not good enough"
+  | "bad"
   | "not too bad but could be better"
   | "you're overdoing it"
   | "something went wrong";
@@ -16,7 +16,7 @@ interface Result {
   ratingDescription: Description;
 }
 
-const calculateExercises = (
+export const calculateExercises = (
   deh: number[], // daily exercise hours
   target: number
 ): Result => {
@@ -27,7 +27,7 @@ const calculateExercises = (
   let rating: Rating;
   if (average < 0.95 * target) {
     rating = 1;
-    ratingDescription = "not good enough";
+    ratingDescription = "bad";
   } else if (average <= 1.25 * target) {
     rating = 2;
     ratingDescription = "not too bad but could be better";
@@ -69,13 +69,15 @@ const getValidExerciseArgs = (inputValues: string[]): ExerciseInput => {
   };
 };
 
-try {
-  const { target, deh } = getValidExerciseArgs(process.argv.slice(2));
-  console.log(calculateExercises(deh, target));
-} catch (e: unknown) {
-  if (e instanceof Error) {
-    console.error("Error:", e.message);
-  } else {
-    console.error("Something went wrong");
+if (require.main === module) {
+  try {
+    const { target, deh } = getValidExerciseArgs(process.argv.slice(2));
+    console.log(calculateExercises(deh, target));
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error("Error:", e.message);
+    } else {
+      console.error("Something went wrong");
+    }
   }
 }
