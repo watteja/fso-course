@@ -41,6 +41,13 @@ const data: Patient[] = [
     gender: "male",
     occupation: "Digital evangelist",
   },
+  // {
+  //   name: 'Ellen Ripley',
+  //   occupation: 'Warrant Officer',
+  //   ssn: '694181-564S',
+  //   dateOfBirth: '1979-11-13',
+  //   gender: 'other'
+  // }
 ];
 
 export default data;
