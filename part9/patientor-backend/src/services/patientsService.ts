@@ -18,7 +18,7 @@ const addPatient = (entry: NewPatient): Patient => {
     ...entry,
   };
 
-  patientsData.push(newPatient);
+  patientsData.push(newPatient); // keeping data in working memory only (toy example)
   return newPatient;
 };
 
