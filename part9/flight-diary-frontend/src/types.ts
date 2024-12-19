@@ -20,3 +20,5 @@ export enum Visibility {
   Ok = "ok",
   Poor = "poor",
 }
+
+export type NewDiaryEntry = Omit<DiaryEntry, "id">;
