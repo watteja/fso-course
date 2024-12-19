@@ -12,10 +12,15 @@ const getNonSensitivePatients = (): NonSensitivePatient[] => {
   }));
 };
 
+const getPatient = (id: string): Patient | undefined => {
+  return patientsData.find((patient) => patient.id === id);
+};
+
 const addPatient = (entry: NewPatient): Patient => {
   const newPatient: Patient = {
     id: uuid(),
     ...entry,
+    entries: [],
   };
 
   patientsData.push(newPatient); // keeping data in working memory only (toy example)
@@ -24,5 +29,6 @@ const addPatient = (entry: NewPatient): Patient => {
 
 export default {
   getNonSensitivePatients,
+  getPatient,
   addPatient,
 };
