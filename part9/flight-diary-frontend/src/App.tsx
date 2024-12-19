@@ -1,21 +1,40 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { DiaryEntry, NewDiaryEntry, Visibility, Weather } from "./types";
 import { getAllEntries, createEntry } from "./diaryService";
 
 function App() {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     getAllEntries().then((entries) => setDiaryEntries(entries));
   }, []);
 
+  const notify = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+  };
+
   const addEntry = async (entry: NewDiaryEntry) => {
-    const newEntry = await createEntry(entry);
-    setDiaryEntries(diaryEntries.concat(newEntry));
+    try {
+      const newEntry = await createEntry(entry);
+      setDiaryEntries(diaryEntries.concat(newEntry));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        notify(error.response?.data || "Unknown error");
+      } else {
+        notify("Unknown error");
+      }
+    }
   };
 
   return (
     <>
+      <h3>Add new entry</h3>
+      <Notify errorMessage={errorMessage} />
       <EntryForm onAddEntry={addEntry} />
 
       <h3>Diary entries</h3>
@@ -56,7 +75,6 @@ const EntryForm = ({ onAddEntry }: EntryFormProps) => {
 
   return (
     <>
-      <h3>Add new entry</h3>
       <form onSubmit={handleAddEntry}>
         <div>
           <label>date</label>
@@ -94,6 +112,13 @@ const EntryForm = ({ onAddEntry }: EntryFormProps) => {
       </form>
     </>
   );
+};
+
+const Notify = ({ errorMessage }: { errorMessage: string }) => {
+  if (!errorMessage) {
+    return null;
+  }
+  return <p style={{ color: "red" }}>{errorMessage}</p>;
 };
 
 export default App;
