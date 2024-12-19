@@ -35,7 +35,7 @@ function App() {
     <>
       <h3>Add new entry</h3>
       <Notify errorMessage={errorMessage} />
-      <EntryForm onAddEntry={addEntry} />
+      <EntryForm onAddEntry={addEntry} onError={notify} />
 
       <h3>Diary entries</h3>
       {diaryEntries.map((entry) => (
@@ -55,20 +55,26 @@ const Entry = ({ entry }: { entry: DiaryEntry }) => (
 
 interface EntryFormProps {
   onAddEntry: (entry: NewDiaryEntry) => void;
+  onError: (message: string) => void;
 }
 
-const EntryForm = ({ onAddEntry }: EntryFormProps) => {
+const EntryForm = ({ onAddEntry, onError }: EntryFormProps) => {
   const [date, setDate] = useState("");
-  const [visibility, setVisibility] = useState("");
-  const [weather, setWeather] = useState("");
+  const [visibility, setVisibility] = useState<Visibility>();
+  const [weather, setWeather] = useState<Weather>();
   const [comment, setComment] = useState("");
 
   const handleAddEntry = (event: React.SyntheticEvent) => {
     event.preventDefault();
+    if (!visibility || !date || !weather) {
+      onError("Please fill in all required fields");
+      return;
+    }
+
     onAddEntry({
       date,
-      visibility: visibility as Visibility,
-      weather: weather as Weather,
+      visibility,
+      weather,
       comment,
     });
   };
@@ -79,25 +85,87 @@ const EntryForm = ({ onAddEntry }: EntryFormProps) => {
         <div>
           <label>date</label>
           <input
-            type="text"
+            type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
           />
         </div>
         <div>
-          <label>visibility</label>
+          <label>visibility</label>{" "}
+          <label htmlFor="visibility-great">{Visibility.Great}</label>
           <input
-            type="text"
-            value={visibility}
-            onChange={(event) => setVisibility(event.target.value)}
+            type="radio"
+            name="visibility"
+            id="visibility-great"
+            value={Visibility.Great}
+            onChange={() => setVisibility(Visibility.Great)}
+          />
+          <label htmlFor="visibility-good">{Visibility.Good}</label>
+          <input
+            type="radio"
+            name="visibility"
+            id="visibility-good"
+            value={Visibility.Good}
+            onChange={() => setVisibility(Visibility.Good)}
+          />
+          <label htmlFor="visibility-ok">{Visibility.Ok}</label>
+          <input
+            type="radio"
+            name="visibility"
+            id="visibility-ok"
+            value={Visibility.Ok}
+            onChange={() => setVisibility(Visibility.Ok)}
+          />
+          <label htmlFor="visibility-poor">{Visibility.Poor}</label>
+          <input
+            type="radio"
+            name="visibility"
+            id="visibility-poor"
+            value={Visibility.Poor}
+            onChange={() => setVisibility(Visibility.Poor)}
           />
         </div>
         <div>
-          <label>weather</label>
+          <label>weather</label>{" "}
+          <label htmlFor="weather-sunny">{Weather.Sunny}</label>
           <input
-            type="text"
-            value={weather}
-            onChange={(event) => setWeather(event.target.value)}
+            type="radio"
+            name="weather"
+            id="weather-sunny"
+            value={Weather.Sunny}
+            onChange={() => setWeather(Weather.Sunny)}
+          />
+          <label htmlFor="weather-rainy">{Weather.Rainy}</label>
+          <input
+            type="radio"
+            name="weather"
+            id="weather-rainy"
+            value={Weather.Rainy}
+            onChange={() => setWeather(Weather.Rainy)}
+          />
+          <label htmlFor="weather-cloudy">{Weather.Cloudy}</label>
+          <input
+            type="radio"
+            name="weather"
+            id="weather-cloudy"
+            value={Weather.Cloudy}
+            onChange={() => setWeather(Weather.Cloudy)}
+          />
+          <label htmlFor="weather-stormy">{Weather.Stormy}</label>
+          <input
+            type="radio"
+            name="weather"
+            id="weather-stormy"
+            value={Weather.Stormy}
+            onChange={() => setWeather(Weather.Stormy)}
+          />
+          <label htmlFor="weather-windy">{Weather.Windy}</label>
+          <input
+            type="radio"
+            name="weather"
+            id="weather-windy"
+            value={Weather.Windy}
+            onChange={() => setWeather(Weather.Windy)}
           />
         </div>
         <div>
