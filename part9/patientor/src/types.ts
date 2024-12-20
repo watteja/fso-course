@@ -57,10 +57,11 @@ export type Entry =
   | HealthCheckEntry;
 
 // Define special omit for unions
-// type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown
+  ? Omit<T, K>
+  : never;
 // Define Entry without the 'id' property
-// export type EntryFormValues = UnionOmit<Entry, 'id'>;
-export type NewEntry = Omit<HealthCheckEntry, "id">;
+export type NewEntry = UnionOmit<Entry, "id">;
 
 export enum Gender {
   Male = "male",
