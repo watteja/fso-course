@@ -7,6 +7,7 @@ import {
   Stack,
   SelectChangeEvent,
   MenuItem,
+  Input,
   InputLabel,
   Select,
 } from "@mui/material";
@@ -15,15 +16,16 @@ import { EntryType, NewEntry } from "../../types";
 interface EntryFormProps {
   onCancel: () => void;
   onSubmit: (values: NewEntry) => void;
+  allCodes: string[];
 }
 
-const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
+const EntryForm = ({ onSubmit, onCancel, allCodes }: EntryFormProps) => {
   const [entryType, setEntryType] = useState<EntryType>(EntryType.HealthCheck);
   const [healthRating, setHealthRating] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [codes, setCodes] = useState("");
+  const [codes, setCodes] = useState<string[]>([]);
   const [dischargeDate, setDischargeDate] = useState("");
   const [criteria, setCriteria] = useState("");
   const [employerName, setEmployerName] = useState("");
@@ -43,6 +45,11 @@ const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
     setEntryType(event.target.value);
   };
 
+  const handleCodesChange = (event: SelectChangeEvent<typeof codes>) => {
+    const { value } = event.target;
+    setCodes(typeof value === "string" ? value.split(",") : value);
+  };
+
   const addEntry = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newEntry = {
@@ -50,7 +57,7 @@ const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
       description,
       date,
       specialist,
-      diagnosisCodes: codes ? codes.split(",") : [],
+      diagnosisCodes: codes,
     };
 
     switch (entryType) {
@@ -106,9 +113,9 @@ const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
           value={description}
           onChange={({ target }) => setDescription(target.value)}
         />
-        <TextField
-          label="Date"
-          fullWidth
+        <InputLabel>Date</InputLabel>
+        <Input
+          type="date"
           value={date}
           onChange={({ target }) => setDate(target.value)}
         />
@@ -126,12 +133,18 @@ const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
             onChange={({ target }) => setHealthRating(target.value)}
           />
         )}
-        <TextField
-          label="Diagnosis codes"
-          fullWidth
+        <Select
+          multiple
           value={codes}
-          onChange={({ target }) => setCodes(target.value)}
-        />
+          onChange={handleCodesChange}
+          label="Diagnosis codes"
+        >
+          {allCodes.map((code) => (
+            <MenuItem key={code} value={code}>
+              {code}
+            </MenuItem>
+          ))}
+        </Select>
         {entryType === EntryType.OccupationalHealthcare && (
           <>
             <TextField
@@ -140,15 +153,15 @@ const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
               value={employerName}
               onChange={({ target }) => setEmployerName(target.value)}
             />
-            <TextField
-              label="Sick leave start date"
-              fullWidth
+            <InputLabel>Sick leave start date</InputLabel>
+            <Input
+              type="date"
               value={sickLeaveStartDate}
               onChange={({ target }) => setSickLeaveStartDate(target.value)}
             />
-            <TextField
-              label="Sick leave end date"
-              fullWidth
+            <InputLabel>Sick leave end date</InputLabel>
+            <Input
+              type="date"
               value={sickLeaveEndDate}
               onChange={({ target }) => setSickLeaveEndDate(target.value)}
             />
@@ -156,9 +169,9 @@ const EntryForm = ({ onSubmit, onCancel }: EntryFormProps) => {
         )}
         {entryType === EntryType.Hospital && (
           <>
-            <TextField
-              label="Discharge date"
-              fullWidth
+            <InputLabel>Discharge date</InputLabel>
+            <Input
+              type="date"
               value={dischargeDate}
               onChange={({ target }) => setDischargeDate(target.value)}
             />

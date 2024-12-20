@@ -95,7 +95,13 @@ const PatientInfo = ({ id, diagnoses }: PatientInfoProps) => {
       <div>occupation: {patient.occupation}</div>
 
       {error && <Alert severity="error">{error}</Alert>}
-      {showForm && <EntryForm onSubmit={addNewEntry} onCancel={hideForm} />}
+      {showForm && (
+        <EntryForm
+          onSubmit={addNewEntry}
+          onCancel={hideForm}
+          allCodes={diagnoses.map((d) => d.code)}
+        />
+      )}
 
       <h3>entries</h3>
       {patient.entries.map((entry: Entry) => (
