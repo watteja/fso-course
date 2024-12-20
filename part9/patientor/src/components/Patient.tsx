@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
-import { Patient } from "../types";
+import { Patient, Entry } from "../types";
 import patientService from "../services/patients";
 
 const PatientInfo = ({ id }: { id: string }) => {
@@ -30,6 +30,20 @@ const PatientInfo = ({ id }: { id: string }) => {
       </h2>
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
+
+      <h3>entries</h3>
+      {patient.entries.map((entry: Entry) => (
+        <div key={entry.id}>
+          <p>
+            {entry.date} <i>{entry.description}</i>
+          </p>
+          <ul>
+            {entry.diagnosisCodes?.map((code) => (
+              <li key={code}>{code}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </>
   );
 };
