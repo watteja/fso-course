@@ -2,10 +2,15 @@ import { useState, useEffect } from "react";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
-import { Patient, Entry } from "../types";
+import { Patient, Entry, Diagnosis } from "../types";
 import patientService from "../services/patients";
 
-const PatientInfo = ({ id }: { id: string }) => {
+interface PatientInfoProps {
+  id: string;
+  diagnoses: Diagnosis[];
+}
+
+const PatientInfo = ({ id, diagnoses }: PatientInfoProps) => {
   const [patient, setPatient] = useState<Patient | undefined>();
 
   useEffect(() => {
@@ -39,7 +44,10 @@ const PatientInfo = ({ id }: { id: string }) => {
           </p>
           <ul>
             {entry.diagnosisCodes?.map((code) => (
-              <li key={code}>{code}</li>
+              <li key={code}>
+                {code}{" "}
+                {diagnoses.find((diagnosis) => diagnosis.code === code)?.name}
+              </li>
             ))}
           </ul>
         </div>

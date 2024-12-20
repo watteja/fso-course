@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Patient, PatientFormValues } from "../types";
-
 import { apiBaseUrl } from "../constants";
 
 const getAll = async () => {
