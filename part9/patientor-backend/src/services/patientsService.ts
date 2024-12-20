@@ -25,7 +25,7 @@ const getPatient = (id: string): Patient | undefined => {
 const addPatient = (newPatientData: NewPatient): Patient => {
   // generate ids for patient's entries
   const entries = newPatientData.entries;
-  entries.forEach((entry) => {
+  entries?.forEach((entry) => {
     entry.id = uuid();
   });
 
@@ -49,7 +49,11 @@ const addEntry = (patientId: string, newEntryData: NewEntry): Entry => {
     ...newEntryData,
   };
 
-  patient.entries.push(newEntry);
+  if (patient.entries) {
+    patient.entries.push(newEntry);
+  } else {
+    patient.entries = [newEntry];
+  }
   return newEntry;
 };
 

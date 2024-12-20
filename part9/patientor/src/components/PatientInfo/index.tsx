@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
-import { Patient, Entry, Diagnosis } from "../../types";
+import { Patient, Entry, Diagnosis, NewEntry } from "../../types";
 import patientService from "../../services/patients";
 import EntryDetails from "./EntryDetails";
+import Button from "@mui/material/Button/Button";
+import EntryForm from "./EntryForm";
+import axios from "axios";
+import Alert from "@mui/material/Alert/Alert";
 
 interface PatientInfoProps {
   id: string;
@@ -13,6 +17,8 @@ interface PatientInfoProps {
 
 const PatientInfo = ({ id, diagnoses }: PatientInfoProps) => {
   const [patient, setPatient] = useState<Patient | undefined>();
+  const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     patientService.getOne(id).then((patient) => setPatient(patient));
@@ -38,6 +44,41 @@ const PatientInfo = ({ id, diagnoses }: PatientInfoProps) => {
     return null;
   }
 
+  const hideForm = () => {
+    setShowForm(false);
+    setError(undefined);
+  };
+
+  const addNewEntry = async (values: NewEntry) => {
+    try {
+      const addedEntry = await patientService.addEntry(id, values);
+      const updatedPatient = {
+        ...patient,
+        entries: patient.entries.concat(addedEntry),
+      };
+      setPatient(updatedPatient);
+      setShowForm(false);
+    } catch (e: unknown) {
+      console.log("ERROR");
+
+      console.log(e);
+
+      if (axios.isAxiosError(e)) {
+        const errors: { message: string }[] = e.response?.data?.error;
+        if (errors) {
+          console.log(errors);
+          const message = errors.map((error) => error.message).join(". ");
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+    }
+  };
+
   return (
     <>
       <h2>
@@ -53,6 +94,9 @@ const PatientInfo = ({ id, diagnoses }: PatientInfoProps) => {
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
 
+      {error && <Alert severity="error">{error}</Alert>}
+      {showForm && <EntryForm onSubmit={addNewEntry} onCancel={hideForm} />}
+
       <h3>entries</h3>
       {patient.entries.map((entry: Entry) => (
         <div className="entry" key={entry.id}>
@@ -60,6 +104,15 @@ const PatientInfo = ({ id, diagnoses }: PatientInfoProps) => {
           <div>diagnose by {entry.specialist}</div>
         </div>
       ))}
+      {!showForm && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setShowForm(true)}
+        >
+          Add New Entry
+        </Button>
+      )}
     </>
   );
 };
