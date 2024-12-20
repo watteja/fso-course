@@ -16,14 +16,13 @@ const getPatient = (id: string): Patient | undefined => {
   return patientsData.find((patient) => patient.id === id);
 };
 
-const addPatient = (entry: NewPatient): Patient => {
+const addPatient = (newPatientData: NewPatient): Patient => {
   const newPatient: Patient = {
     id: uuid(),
-    ...entry,
-    entries: [],
+    ...newPatientData,
   };
 
-  patientsData.push(newPatient); // keeping data in working memory only (toy example)
+  patientsData.push(newPatient);
   return newPatient;
 };
 
