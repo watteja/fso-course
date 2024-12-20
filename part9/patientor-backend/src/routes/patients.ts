@@ -1,8 +1,14 @@
 import express, { Request, Response, NextFunction } from "express";
 import patientsService from "../services/patientsService";
 import { z } from "zod";
-import { NewPatient, NonSensitivePatient, Patient } from "../types";
-import { NewPatientSchema } from "../utils";
+import {
+  Entry,
+  NewEntry,
+  NewPatient,
+  NonSensitivePatient,
+  Patient,
+} from "../types";
+import { NewPatientSchema, NewEntrySchema } from "../utils";
 
 const router = express.Router();
 
@@ -30,6 +36,33 @@ const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   }
 };
 
+router.post(
+  "/",
+  newPatientParser,
+  (req: Request<unknown, unknown, NewPatient>, res: Response<Patient>) => {
+    const addedPatient = patientsService.addPatient(req.body);
+    res.json(addedPatient);
+  }
+);
+
+const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    NewEntrySchema.parse(req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+router.post(
+  "/:id/entries",
+  newEntryParser,
+  (req: Request<{ id: string }, unknown, NewEntry>, res: Response<Entry>) => {
+    const addedEntry = patientsService.addEntry(req.params.id, req.body);
+    res.json(addedEntry);
+  }
+);
+
 const errorMiddleware = (
   error: unknown,
   _req: Request,
@@ -42,15 +75,6 @@ const errorMiddleware = (
     next(error);
   }
 };
-
-router.post(
-  "/",
-  newPatientParser,
-  (req: Request<unknown, unknown, NewPatient>, res: Response<Patient>) => {
-    const addedPatient = patientsService.addPatient(req.body);
-    res.json(addedPatient);
-  }
-);
 
 router.use(errorMiddleware);
 

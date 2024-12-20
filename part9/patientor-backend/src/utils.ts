@@ -1,7 +1,7 @@
-import { Gender, EntryType } from "./types";
+import { Gender, EntryType, HealthCheckRating } from "./types";
 import { z } from "zod";
 
-const DiagnosisSchema = z.object({
+export const DiagnosisSchema = z.object({
   code: z.string(),
   name: z.string(),
   latin: z.string().optional(),
@@ -36,13 +36,20 @@ const OccupationalHealthcareEntrySchema = BaseEntrySchema.extend({
 
 const HealthCheckEntrySchema = BaseEntrySchema.extend({
   type: z.literal(EntryType.HealthCheck),
-  healthCheckRating: z.number(),
+  healthCheckRating: z.nativeEnum(HealthCheckRating),
 });
 
-const EntrySchema = z.discriminatedUnion("type", [
+export const EntrySchema = z.discriminatedUnion("type", [
   HospitalEntrySchema,
   OccupationalHealthcareEntrySchema,
   HealthCheckEntrySchema,
+]);
+
+// Omit 'id' from each member of EntrySchema discriminated union
+export const NewEntrySchema = z.discriminatedUnion("type", [
+  HospitalEntrySchema.omit({ id: true }),
+  OccupationalHealthcareEntrySchema.omit({ id: true }),
+  HealthCheckEntrySchema.omit({ id: true }),
 ]);
 
 const isSsn = (ssn: string): boolean => {
@@ -57,4 +64,13 @@ export const NewPatientSchema = z.object({
   gender: z.nativeEnum(Gender),
   occupation: z.string(),
   entries: z.array(EntrySchema),
+});
+
+export const PatientSchema = NewPatientSchema.extend({
+  id: z.string(),
+});
+
+export const NonSensitivePatientSchema = PatientSchema.omit({
+  ssn: true,
+  entries: true,
 });
