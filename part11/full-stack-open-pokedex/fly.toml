@@ -1,0 +1,38 @@
+# fly.toml app configuration file generated for full-stack-open-pokedex-broken-lake-7732 on 2025-02-19T17:39:06+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'full-stack-open-pokedex-broken-lake-7732'
+primary_region = 'arn'
+
+[build]
+
+[env]
+  PORT = "3000"
+
+[processes]
+  app = "node app.js"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[deploy]
+  strategy = "canary"
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/health"

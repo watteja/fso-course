@@ -1,0 +1,120 @@
+Script started on 2025-03-01 10:00:28+01:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="120" LINES="30"]
+[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ [7mdocker compose -f docker-compose.dev.yml up -[27m[7md[27m[A
+]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ docker compose -f docker-compose.dev.yml up -d
+[?2004l
+[1A[1B[0G[?25l[+] Running 0/0
+ [33m⠋[0m Container todo-backend-mongo-1  Starting                                                                        [34m0.1s [0m
+[?25h[1A[1A[0G[?25l[+] Running 0/1
+ [33m⠙[0m Container todo-backend-mongo-1  Starting                                                                        [34m0.2s [0m
+[?25h[1A[1A[0G[?25l[+] Running 0/1
+ [33m⠹[0m Container todo-backend-mongo-1  Starting                                                                        [34m0.3s [0m
+[?25h[1A[1A[0G[?25l[34m[+] Running 1/1[0m
+ [32m✔[0m Container todo-backend-mongo-1  [32mStarted[0m                                                                         [34m0.3s [0m
+[?25h[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ [7mdocker container ls[27mdocker container ls
+[?2004l
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS         PORTS                     NAMES
+8713ec9de6ae   mongo     "docker-entrypoint.s…"   17 minutes ago   Up 9 seconds   0.0.0.0:3456->27017/tcp   todo-backend-mongo-1
+[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ [7mdocker exec -it todo-backend-mongo-1 mongosh [27m[7m-[27m[7mu root -p example[27m[A
+]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ docker exec -it todo-backend-mongo-1 mongosh -u root -p example
+[?2004l
+]0;mongosh mongodb://<credentials>@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000Current Mongosh Log ID:	67c2ccd1bc2997dcd751e943
+Connecting to:		[1m[32mmongodb://<credentials>@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.4.0[0m
+Using MongoDB:		8.0.5
+[1m[33mUsing Mongosh[0m:		2.4.0
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+[1G[0J [1G[?2004h[1m[33m------[0m
+   [1m[33mThe server generated these startup warnings when booting[0m
+   2025-03-01T09:00:38.195+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2025-03-01T09:00:38.976+00:00: For customers running the current memory allocator, we suggest changing the contents of the following sysfsFile
+   2025-03-01T09:00:38.976+00:00: We suggest setting the contents of sysfsFile to 0.
+   2025-03-01T09:00:38.976+00:00: Your system has glibc support for rseq built in, which is not yet supported by tcmalloc-google and has critical performance implications. Please set the environment variable GLIBC_TUNABLES=glibc.pthread.rseq=0
+   2025-03-01T09:00:38.976+00:00: vm.max_map_count is too low
+   2025-03-01T09:00:38.976+00:00: We suggest setting swappiness to 0 or 1, as swapping can cause performance problems.
+[1m[33m------[0m
+
+[1G[0Jtest> [7Gshow dbs
+
+[1madmin[0m         100.00 KiB
+[1mconfig[0m        108.00 KiB
+[1mlocal[0m          72.00 KiB
+[1mthe_database[0m   56.00 KiB
+[1G[0Jtest> [7Guse the_database
+
+switched to db the_database
+[1G[0Jthe_database> [15Gshow collections
+
+[1mtodos[0m
+[1G[0Jthe_database> [15Gdb.todos.fid[1G[0Jthe_database> db.todos.fi[26Gnd({})
+
+[
+  {
+    _id: ObjectId([32m'67c1f5ff3e7db1a8d351e944'[39m),
+    text: [32m'Write code'[39m,
+    done: [33mtrue[39m
+  },
+  {
+    _id: ObjectId([32m'67c1f5ff3e7db1a8d351e945'[39m),
+    text: [32m'Learn about containers'[39m,
+    done: [33mtrue[39m
+  }
+]
+[1G[0Jthe_database> [15Gdb.todos.insertOne({text[33mtext[39m: [32m"[39m[32mI[39m[32mn[39m[32mc[39m[32mr[39m[32me[39m[32ma[39m[32ms[39m[32me[39m [32mt[39m[32mh[39m[32me[39m [32mn[39m[32mu[39m[32mm[39m[32mb[39m[32me[39m[32mr[39m [32mo[39m[32mf[39m [32mt[39m[32mo[39m[32mo[39m[32ml[39m[32ms[39m [32mi[39m[32mn[39m [32mm[39m[32my[39m [32mt[39m[32mo[39m[32mo[39m[32ml[39m [32mb[39m[32me[39m[32ml[39m[32mt[39m[32m"[39m, d[36mdo[39mdone: fals[33mfalse[39m})
+
+{
+  acknowledged: [33mtrue[39m,
+  insertedId: ObjectId([32m'67c2cd09bc2997dcd751e944'[39m)
+}
+[1G[0Jthe_database> [15G[1G[0Jthe_database> db.todos.insertOne({[33mtext[39m: [32m"Increase the number of tools in my tool belt"[39m, [33mdone[39m: [33mfalse[39m})[102G[1G[0Jthe_database> db.todos.find({})[32G
+
+[
+  {
+    _id: ObjectId([32m'67c1f5ff3e7db1a8d351e944'[39m),
+    text: [32m'Write code'[39m,
+    done: [33mtrue[39m
+  },
+  {
+    _id: ObjectId([32m'67c1f5ff3e7db1a8d351e945'[39m),
+    text: [32m'Learn about containers'[39m,
+    done: [33mtrue[39m
+  },
+  {
+    _id: ObjectId([32m'67c2cd09bc2997dcd751e944'[39m),
+    text: [32m'Increase the number of tools in my tool belt'[39m,
+    done: [33mfalse[39m
+  }
+]
+[1G[0Jthe_database> [15Gexit
+
+[?2004l[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ npm[K[Kvm use [K[K[K[K[K[K[Kpm run dev
+[?2004l
+
+> todo-express-backend@0.0.0 dev
+> nodemon ./bin/www
+
+[33m[nodemon] 2.0.12[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,json[39m
+[32m[nodemon] starting `node ./bin/www`[39m
+[0mGET /todos [32m200 [0m9.856 ms - 249[0m
+^C
+[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ [7mdocker container stop todo todo-backend-mongo[27m[7m-[27m[7m1[27m[A
+]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ docker container stop todo todo-backend-mongo-1
+[?2004l
+todo-backend-mongo-1
+Error response from daemon: No such container: todo
+[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ docker container stop todo todo-backend-mongo-1
+[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ctodo-backend-mongo-1[K[A
+]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ctodo-backend-mongo-1 
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1Ptodo-backend-mongo-1
+
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[1Ptodo-backend-mongo-1[1Podo-backend-mongo-1
+[?2004l
+todo-backend-mongo-1
+[?2004h]0;watteja@this-pc: ~/projects/containers-applications/todo-app/todo-backend[01;32mwatteja@this-pc[00m:[01;34m~/projects/containers-applications/todo-app/todo-backend[00m$ exit [K
+[?2004l
+exit
+
+Script done on 2025-03-01 10:03:39+01:00 [COMMAND_EXIT_CODE="0"]

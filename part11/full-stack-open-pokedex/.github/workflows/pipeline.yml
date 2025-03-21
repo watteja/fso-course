@@ -1,0 +1,109 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+env:
+  # Release only on push/merge and only if the commit message doesn't contain '#skip'
+  RELEASE: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip')}}
+  DISCORD_USERNAME: GitHub
+  DISCORD_AVATAR: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+jobs:
+  deployment_pipeline:
+    runs-on: ubuntu-20.04
+    outputs:
+      release: ${{ env.RELEASE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: lint
+        run: npm run eslint
+      - name: build
+        run: npm run build
+      - name: test
+        run: npm run test
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: deploy
+        if: ${{ env.RELEASE == 'true' }}
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      # notify Discord channel about failed build
+      - name: Failure notification
+        env:
+          DISCORD_EMBEDS: |-
+            [
+              {
+                "description": "commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the build :(",
+                "color": 16711680,
+                "footer": {
+                  "text": "Severity: Error"
+                },
+                "timestamp": "${{ github.event.head_commit.timestamp }}"
+              }
+            ]
+        uses: Ilshidur/action-discord@08d9328877d6954120eef2b07abbc79249bb6210
+        if: ${{ env.RELEASE == 'true' && failure() }}
+        with:
+          args: 'Build failed'
+
+  tag_release:
+    # Make sure pipeline finishes its run first
+    needs: [deployment_pipeline]
+    if: ${{ needs.deployment_pipeline.outputs.release == 'true' }}
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@f278d49d30cdd8775cc3e7dd00b5ee11686ee297 # should be 1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          # DRY_RUN: true # Use this to test the action without creating or tagging the release
+      # notify Discord channel about failed build
+      - name: Failure notification
+        env:
+          DISCORD_EMBEDS: |-
+            [
+              {
+                "description": "commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the build :(",
+                "color": 16711680,
+                "footer": {
+                  "text": "Severity: Error"
+                },
+                "timestamp": "${{ github.event.head_commit.timestamp }}"
+              }
+            ]
+        uses: Ilshidur/action-discord@08d9328877d6954120eef2b07abbc79249bb6210
+        if: failure()
+        with:
+          args: 'Build failed'
+      # notify Discord channel about successful release
+      - name: Success notification
+        env:
+          DISCORD_EMBEDS: |-
+            [
+              {
+                "description": "to https://full-stack-open-pokedex-broken-lake-7732.fly.dev/ by ${{ github.event.head_commit.author.username }}",
+                "color": 65280,
+                "footer": {
+                  "text": "Severity: Informational"
+                },
+                "timestamp": "${{ github.event.head_commit.timestamp }}"
+              }
+            ]
+        uses: Ilshidur/action-discord@08d9328877d6954120eef2b07abbc79249bb6210
+        if: success()
+        with:
+          args: 'A new version of Pokedex deployed'
